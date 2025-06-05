@@ -1,0 +1,2128 @@
+        
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <!-- 문서 타입을 HTML5로 선언하고 언어를 한국어로 설정 -->
+    <meta charset="UTF-8">
+    <!-- 문자 인코딩을 UTF-8로 설정 (한글 깨짐 방지) -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- 모바일 기기에서 화면 크기에 맞게 표시하도록 설정 -->
+    <title>박민주 & 이세영영 결혼식 초대장</title>
+    <!-- 웹페이지 제목 설정 -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js"></script>
+    <style>
+        /* CSS 스타일 시작 - 웹페이지의 디자인을 담당 */
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@300;400;600;700&family=Inter:wght@300;400;500;600&display=swap');
+        /* 구글 폰트: Playfair Display(우아한 세리프), Inter(모던 산세리프) */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            /* 모든 요소의 여백을 0으로 초기화하고 박스 크기 계산 방식 통일 */
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #fafafa;
+            color: #2d2d2d;
+            line-height: 1.6;
+            overflow-x: hidden;
+            /* 본문: 모던 폰트, 연한 회색 배경, 어두운 회색 글자, 가로 스크롤 숨김 */
+        }
+
+        /* 꽃잎 애니메이션을 위한 컨테이너 */
+        .petals-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            /* 꽃잎 컨테이너: 화면 전체를 덮는 고정 위치, 클릭 이벤트 무시 */
+        }
+
+        /* 개별 꽃잎 스타일 - 미니멀한 디자인 */
+        .petal {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(200, 180, 160, 0.6);
+            border-radius: 50%;
+            animation: fall linear infinite;
+            /* 꽃잎: 작은 점 형태, 베이지 색상, 원형, 낙하 애니메이션 */
+        }
+
+        /* 꽃잎 낙하 애니메이션 */
+        @keyframes fall {
+            0% {
+                transform: translateY(-10vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(110vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .container {
+            max-width: 420px;
+            margin: 0 auto;
+            background: #ffffff;
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.08);
+            position: relative;
+            z-index: 2;
+            /* 메인 컨테이너: 최대 너비 420px, 중앙 정렬, 흰색 배경, 부드러운 그림자 */
+        }
+
+        /* 메인 초대장 섹션 */
+        .invitation-main {
+            text-align: center;
+            padding: 80px 40px 60px;
+            background: linear-gradient(180deg, #ffffff 0%, #f8f8f8 100%);
+            position: relative;
+            /* 메인 초대장: 중앙 정렬, 여백, 세로 그라데이션 배경 */
+        }
+
+        /* 날짜 표시 */
+        .date-display {
+            font-family: 'Playfair Display', serif;
+            font-size: 56px;
+            font-weight: 300;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+            letter-spacing: 2px;
+            /* 날짜: 우아한 세리프 폰트, 큰 글씨, 가는 굵기, 검은색 */
+        }
+
+        .date-separator {
+            font-size: 40px;
+            color: #c8b4a0;
+            font-weight: 300;
+            /* 날짜 구분자: 중간 크기, 베이지색 */
+        }
+
+        .day-of-week {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 60px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            font-weight: 300;
+            /* 요일: 작은 글씨, 회색, 대문자, 가는 굵기 */
+        }
+
+        /* 모달 창 스타일 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            backdrop-filter: blur(8px);
+            /* 모달: 기본 숨김, 화면 전체 덮기, 블러 효과 */
+        }
+
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            text-align: center;
+            max-width: 380px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            /* 모달 내용: 화면 중앙, 흰색 배경, 둥근 모서리, 그림자 */
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 16px;
+            right: 20px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #999;
+            transition: color 0.2s;
+            /* 모달 닫기 버튼: 우상단, 회색, 호버 효과 */
+        }
+
+        .close-modal:hover {
+            color: #333;
+        }
+
+        .modal h3 {
+            color: #1a1a1a;
+            margin-bottom: 24px;
+            font-size: 20px;
+            font-weight: 500;
+            /* 모달 제목: 검은색, 중간 굵기 */
+        }
+
+        .modal-info {
+            margin: 16px 0;
+            font-size: 15px;
+            color: #555;
+            line-height: 1.5;
+            /* 모달 정보: 회색, 줄 간격 */
+        }
+
+        .button {
+            background: #1a1a1a;
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            margin: 8px 6px;
+            transition: all 0.2s ease;
+            font-family: inherit;
+            /* 버튼: 검은색 배경, 흰색 글자, 둥근 모서리, 호버 효과 */
+        }
+
+        .button:hover {
+            background: #333;
+            transform: translateY(-1px);
+            /* 마우스 올렸을 때: 회색으로 변경, 위로 이동 */
+        }
+
+        .button-outline {
+            background: transparent;
+            color: #1a1a1a;
+            border: 1px solid #e0e0e0;
+            /* 테두리 버튼: 투명 배경, 검은 글자, 회색 테두리 */
+        }
+
+        .button-outline:hover {
+            background: #f5f5f5;
+            transform: translateY(-1px);
+        }
+
+        /* 청첩장 헤더 메시지 */
+        .invitation-message {
+            font-size: 15px;
+            line-height: 1.8;
+            color: #666;
+            margin-bottom: 50px;
+            font-weight: 300;
+            /* 초대 메시지: 회색, 가는 굵기, 줄 간격 */
+        }
+
+        /* 신랑신부 이름 */
+        .couple-names {
+            font-family: 'Playfair Display', serif;
+            font-size: 32px;
+            font-weight: 400;
+            color: #1a1a1a;
+            margin: 40px 0;
+            /* 신랑신부 이름: 세리프 폰트, 큰 글씨, 검은색 */
+        }
+
+        .groom-bride {
+            display: inline-block;
+            margin: 0 20px;
+            /* 신랑신부: 인라인 블록, 좌우 여백 */
+        }
+
+        .ampersand {
+            color: #c8b4a0;
+            font-size: 24px;
+            margin: 0 16px;
+            font-weight: 300;
+            /* 앰퍼샌드(&): 베이지색, 작은 크기, 가는 굵기 */
+        }
+
+        /* 웨딩 사진 갤러리 - 슬라이드 형태 */
+        .photo-gallery {
+            padding: 60px 0;
+            background: #ffffff;
+            overflow: hidden;
+            /* 사진 갤러리: 여백, 흰색 배경, 오버플로우 숨김 */
+        }
+
+        .gallery-title {
+            text-align: center;
+            font-family: 'Playfair Display', serif;
+            font-size: 24px;
+            color: #1a1a1a;
+            margin-bottom: 40px;
+            font-weight: 400;
+            padding: 0 20px;
+            /* 갤러리 제목: 중앙 정렬, 세리프 폰트, 검은색 */
+        }
+
+        /* 슬라이드 컨테이너 */
+        .slider-container {
+            position: relative;
+            max-width: 100%;
+            margin: 0 auto;
+            /* 슬라이더 컨테이너: 상대 위치, 전체 너비, 중앙 정렬 */
+        }
+
+        /* 슬라이드 래퍼 */
+        .slider-wrapper {
+            overflow: hidden;
+            border-radius: 12px;
+            margin: 0 20px;
+            /* 슬라이더 래퍼: 오버플로우 숨김, 둥근 모서리, 좌우 여백 */
+        }
+
+        /* 슬라이드 트랙 */
+        .slider-track {
+            display: flex;
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            /* 슬라이더 트랙: 플렉스 배치, 부드러운 전환 효과 */
+        }
+
+        /* 개별 슬라이드 */
+        .slide {
+            min-width: 100%;
+            aspect-ratio: 4/3;
+            position: relative;
+            /* 슬라이드: 전체 너비, 4:3 비율, 상대 위치 */
+        }
+
+        .slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            /* 슬라이드 이미지: 전체 크기, 비율 유지하며 채우기 */
+        }
+
+        /* 슬라이드 오버레이 (사진 정보 표시) */
+        .slide-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+            color: white;
+            padding: 30px 20px 20px;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+            /* 오버레이: 하단 위치, 그라데이션 배경, 흰색 글자, 슬라이드 효과 */
+        }
+
+        .slide:hover .slide-overlay {
+            transform: translateY(0);
+            /* 마우스 올렸을 때: 오버레이 표시 */
+        }
+
+        .slide-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            /* 슬라이드 제목: 중간 글씨, 굵게 */
+        }
+
+        .slide-description {
+            font-size: 14px;
+            opacity: 0.9;
+            /* 슬라이드 설명: 작은 글씨, 약간 투명 */
+        }
+
+        /* 슬라이드 네비게이션 버튼 */
+        .slider-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            font-size: 18px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transition: all 0.2s ease;
+            z-index: 10;
+            /* 네비게이션 버튼: 중앙 위치, 원형, 흰색 배경, 그림자 */
+        }
+
+        .slider-nav:hover {
+            background: white;
+            transform: translateY(-50%) scale(1.1);
+            /* 마우스 올렸을 때: 배경 진하게, 크기 확대 */
+        }
+
+        .slider-nav.prev {
+            left: 30px;
+            /* 이전 버튼: 왼쪽 위치 */
+        }
+
+        .slider-nav.next {
+            right: 30px;
+            /* 다음 버튼: 오른쪽 위치 */
+        }
+
+        /* 슬라이드 인디케이터 (점 표시) */
+        .slider-indicators {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 20px;
+            padding: 0 20px;
+            /* 인디케이터: 중앙 정렬, 간격, 상단 여백 */
+        }
+
+        .indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #e0e0e0;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            /* 인디케이터: 작은 원, 회색 배경, 호버 효과 */
+        }
+
+        .indicator.active {
+            background: #1a1a1a;
+            transform: scale(1.2);
+            /* 활성 인디케이터: 검은색, 크기 확대 */
+        }
+
+        .indicator:hover {
+            background: #666;
+            /* 마우스 올렸을 때: 회색으로 변경 */
+        }
+
+        /* 슬라이드 카운터 */
+        .slide-counter {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            /* 슬라이드 카운터: 우상단, 반투명 검은 배경, 흰색 글자 */
+        }
+
+        /* 반응형 디자인 - 슬라이더용 */
+        @media (max-width: 480px) {
+            .slider-wrapper {
+                margin: 0 15px;
+            }
+            
+            .slider-nav {
+                width: 36px;
+                height: 36px;
+                font-size: 16px;
+            }
+            
+            .slider-nav.prev {
+                left: 25px;
+            }
+            
+            .slider-nav.next {
+                right: 25px;
+            }
+            
+            .slide-overlay {
+                padding: 20px 15px 15px;
+            }
+            
+            .slide-title {
+                font-size: 14px;
+            }
+            
+            .slide-description {
+                font-size: 12px;
+            }
+        }
+
+        /* 결혼식 정보 섹션 */
+        .wedding-info {
+            padding: 60px 40px;
+            text-align: center;
+            background: #f8f8f8;
+            /* 결혼식 정보: 여백, 중앙 정렬, 연한 회색 배경 */
+        }
+
+        .info-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 24px;
+            color: #1a1a1a;
+            margin-bottom: 40px;
+            font-weight: 400;
+            /* 정보 제목: 세리프 폰트, 검은색 */
+        }
+
+        .info-card {
+            background: white;
+            padding: 32px 24px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+            text-align: left;
+            /* 정보 카드: 흰색 배경, 여백, 둥근 모서리, 부드러운 그림자, 왼쪽 정렬 */
+        }
+
+        .info-label {
+            font-size: 12px;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+            font-weight: 500;
+            /* 정보 라벨: 작은 글씨, 회색, 대문자, 굵게 */
+        }
+
+        .info-text {
+            font-size: 15px;
+            color: #333;
+            line-height: 1.6;
+            /* 정보 텍스트: 중간 글씨, 어두운 회색, 줄 간격 */
+        }
+
+        .info-text strong {
+            color: #1a1a1a;
+            font-weight: 600;
+            /* 강조 텍스트: 검은색, 굵게 */
+        }
+
+        /* 축의금 전달 섹션 */
+        .money-gift {
+            padding: 60px 40px;
+            text-align: center;
+            background: #ffffff;
+            /* 축의금 섹션: 여백, 중앙 정렬, 흰색 배경 */
+        }
+
+        /* 방명록 섹션 */
+        .guestbook {
+            padding: 60px 40px;
+            background: #f8f8f8;
+            /* 방명록 섹션: 여백, 연한 회색 배경 */
+        }
+
+        .message-form {
+            background: white;
+            padding: 32px;
+            border-radius: 8px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+            margin-bottom: 32px;
+            /* 메시지 폼: 흰색 배경, 여백, 둥근 모서리, 부드러운 그림자 */
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+            /* 폼 그룹: 아래 여백, 왼쪽 정렬 */
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            color: #333;
+            font-weight: 500;
+            font-size: 14px;
+            /* 라벨: 블록 표시, 어두운 회색, 굵게 */
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 15px;
+            font-family: inherit;
+            transition: border-color 0.2s;
+            /* 입력 필드: 전체 너비, 여백, 회색 테두리, 둥근 모서리, 호버 효과 */
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #1a1a1a;
+            /* 포커스 시: 테두리 검은색으로 변경 */
+        }
+
+        .messages-list {
+            max-height: 400px;
+            overflow-y: auto;
+            /* 메시지 목록: 최대 높이, 세로 스크롤 */
+        }
+
+        .message-item {
+            background: white;
+            padding: 24px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            /* 메시지 항목: 흰색 배경, 여백, 둥근 모서리, 부드러운 그림자 */
+        }
+
+        .message-author {
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+            font-size: 14px;
+            /* 메시지 작성자: 굵게, 검은색 */
+        }
+
+        .message-content {
+            color: #555;
+            line-height: 1.6;
+            font-size: 14px;
+            /* 메시지 내용: 회색, 줄 간격 */
+        }
+
+        .message-date {
+            font-size: 12px;
+            color: #999;
+            text-align: right;
+            margin-top: 12px;
+            /* 메시지 날짜: 작은 글씨, 회색, 오른쪽 정렬 */
+        }
+
+        /* 연락처 섹션 */
+        .contact-info {
+            padding: 60px 40px;
+            background: #ffffff;
+            text-align: center;
+            /* 연락처 섹션: 여백, 흰색 배경, 중앙 정렬 */
+        }
+
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-top: 32px;
+            /* 연락처 그리드: 2열, 간격 */
+        }
+
+        .contact-card {
+            background: #f8f8f8;
+            padding: 24px;
+            border-radius: 8px;
+            /* 연락처 카드: 연한 회색 배경, 여백, 둥근 모서리 */
+        }
+
+        .contact-title {
+            font-size: 16px;
+            color: #1a1a1a;
+            font-weight: 600;
+            margin-bottom: 16px;
+            /* 연락처 제목: 중간 글씨, 검은색, 굵게 */
+        }
+
+        .contact-item {
+            margin: 8px 0;
+            font-size: 13px;
+            color: #666;
+            /* 연락처 항목: 여백, 작은 글씨, 회색 */
+        }
+
+        /* 반응형 디자인 */
+        @media (max-width: 480px) {
+            .invitation-main {
+                padding: 60px 30px 50px;
+            }
+            
+            .date-display {
+                font-size: 42px;
+                letter-spacing: 1px;
+            }
+            
+            .couple-names {
+                font-size: 26px;
+            }
+            
+            .photo-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+            
+            .contact-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .wedding-info,
+            .money-gift,
+            .guestbook,
+            .contact-info {
+                padding: 50px 30px;
+            }
+            /* 작은 화면용: 여백 축소, 글씨 크기 축소, 그리드 1열로 변경 */
+        }
+
+        /* 음악 제어 버튼 */
+        .music-control {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            width: 48px;
+            height: 48px;
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            font-size: 16px;
+            cursor: pointer;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+            backdrop-filter: blur(8px);
+            transition: all 0.2s;
+            /* 음악 버튼: 우상단 고정, 원형, 반투명 흰색 배경, 블러 효과 */
+        }
+
+        .music-control:hover {
+            background: rgba(255, 255, 255, 1);
+            transform: scale(1.05);
+        }
+
+        /* 로딩 화면 */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #ffffff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 1s ease;
+            /* 로딩 화면: 전체 화면, 흰색 배경, 중앙 정렬 */
+        }
+
+        .loading-text {
+            color: #666;
+            font-size: 16px;
+            margin-top: 24px;
+            font-weight: 300;
+            /* 로딩 텍스트: 회색, 중간 글씨, 가는 굵기 */
+        }
+
+        .loading-animation {
+            width: 40px;
+            height: 40px;
+            border: 2px solid #f0f0f0;
+            border-top: 2px solid #c8b4a0;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            /* 로딩 애니메이션: 원형 스피너, 베이지색 */
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+            /* 스핀 애니메이션: 360도 회전 */
+        }
+
+        /* 구분선 */
+        .divider {
+            width: 60px;
+            height: 1px;
+            background: #e0e0e0;
+            margin: 40px auto;
+            /* 구분선: 짧은 가로선, 회색, 중앙 정렬 */
+        }
+
+        /* 섹션별 여백 조정 */
+        .section-spacing {
+            padding: 80px 40px;
+            /* 섹션 여백: 상하 80px, 좌우 40px */
+        }
+
+        /* 텍스트 크기 계층 */
+        .text-xs { font-size: 12px; }
+        .text-sm { font-size: 14px; }
+        .text-base { font-size: 16px; }
+        .text-lg { font-size: 18px; }
+        .text-xl { font-size: 20px; }
+        .text-2xl { font-size: 24px; }
+        .text-3xl { font-size: 30px; }
+
+        /* 색상 유틸리티 */
+        .text-primary { color: #1a1a1a; }
+        .text-secondary { color: #666; }
+        .text-muted { color: #999; }
+        .text-accent { color: #c8b4a0; }
+
+        /* 그림자 유틸리티 */
+        .shadow-sm { box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12); }
+        .shadow-md { box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); }
+        .shadow-lg { box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15); }
+    </style>
+  
+    <script>
+
+        /**
+         * 슬라이더 초기화 함수
+         * 슬라이더의 인디케이터와 기본 설정을 초기화합니다
+         **/
+        function initializeSlider() {
+            const slides = document.querySelectorAll('.slide');
+            totalSlides = slides.length;
+            
+            // 전체 슬라이드 수 업데이트
+            document.getElementById('totalSlides').textContent = totalSlides;
+            
+            // 인디케이터 생성
+            createIndicators();
+            
+            // 첫 번째 슬라이드로 설정
+            updateSlider();
+            
+            // 자동 슬라이드 시작 (5초마다)
+            startAutoSlide();
+            
+            // 터치 이벤트 등록
+            setupTouchEvents();
+        }
+
+        /**
+         * 인디케이터 점들을 생성하는 함수
+         */
+        function createIndicators() {
+            const indicatorsContainer = document.getElementById('sliderIndicators');
+            indicatorsContainer.innerHTML = ''; // 기존 인디케이터 제거
+            
+            for (let i = 0; i < totalSlides; i++) {
+                const indicator = document.createElement('div');
+                indicator.className = 'indicator';
+                if (i === 0) indicator.classList.add('active'); // 첫 번째 인디케이터 활성화
+                
+                // 인디케이터 클릭 이벤트
+                indicator.addEventListener('click', function() {
+                    goToSlide(i);
+                });
+                
+                indicatorsContainer.appendChild(indicator);
+            }
+        }
+
+        /**
+         * 다음 슬라이드로 이동하는 함수
+           **/
+        function nextSlide() {
+            currentSlideIndex = (currentSlideIndex + 1) % totalSlides;
+            updateSlider();
+            resetAutoSlide(); // 자동 슬라이드 재시작
+        }
+
+        /**
+         * 이전 슬라이드로 이동하는 함수
+            **/
+        function previousSlide() {
+            currentSlideIndex = (currentSlideIndex - 1 + totalSlides) % totalSlides;
+            updateSlider();
+            resetAutoSlide(); // 자동 슬라이드 재시작
+        }
+
+        /**
+         * 특정 슬라이드로 이동하는 함수
+         * @param {number} index - 이동할 슬라이드 인덱스
+            **/
+        function goToSlide(index) {
+            currentSlideIndex = index;
+            updateSlider();
+            resetAutoSlide(); // 자동 슬라이드 재시작
+        }
+
+        /**
+         * 슬라이더 상태를 업데이트하는 함수
+         * 슬라이드 위치, 인디케이터, 카운터를 업데이트합니다
+           **/
+        function updateSlider() {
+            const sliderTrack = document.getElementById('sliderTrack');
+            const indicators = document.querySelectorAll('.indicator');
+            const currentSlideSpan = document.getElementById('currentSlide');
+            
+            // 슬라이드 트랙 이동 (translateX 사용)
+            const translateX = -currentSlideIndex * 100; // 현재 인덱스 * 100%
+            sliderTrack.style.transform = `translateX(${translateX}%)`;
+            
+            // 인디케이터 업데이트
+            indicators.forEach((indicator, index) => {
+                if (index === currentSlideIndex) {
+                    indicator.classList.add('active');
+                } else {
+                    indicator.classList.remove('active');
+                }
+            });
+            
+            // 슬라이드 카운터 업데이트
+            currentSlideSpan.textContent = currentSlideIndex + 1;
+        }
+
+        /**
+         * 자동 슬라이드를 시작하는 함수
+          **/
+        function startAutoSlide() {
+            if (isAutoSliding) {
+                slideInterval = setInterval(function() {
+                    nextSlide();
+                }, 10000); // 5초마다 다음 슬라이드로 이동
+            }
+        }
+
+        /**
+         * 자동 슬라이드를 정지하는 함수
+         **/
+        function stopAutoSlide() {
+            if (slideInterval) {
+                clearInterval(slideInterval);
+            }
+        }
+
+        /**
+         * 자동 슬라이드를 재시작하는 함수
+         * 사용자가 수동으로 슬라이드를 조작했을 때 호출됩니다
+          **/
+        function resetAutoSlide() {
+            stopAutoSlide();
+            setTimeout(function() {
+                startAutoSlide();
+            }, 5000); // 1초 후 자동 슬라이드 재시작
+        }
+
+        /**
+         * 터치 이벤트를 설정하는 함수
+         * 모바일에서 스와이프 제스처로 슬라이드 조작
+          **/
+        function setupTouchEvents() {
+            const sliderWrapper = document.querySelector('.slider-wrapper');
+            let startX = 0;
+            let endX = 0;
+            let isDragging = false;
+
+            // 터치 시작
+            sliderWrapper.addEventListener('touchstart', function(e) {
+                startX = e.touches[0].clientX;
+                isDragging = true;
+                stopAutoSlide(); // 터치 중에는 자동 슬라이드 정지
+            });
+
+            // 터치 이동
+            sliderWrapper.addEventListener('touchmove', function(e) {
+                if (!isDragging) return;
+                e.preventDefault(); // 스크롤 방지
+            });
+
+            // 터치 종료
+            sliderWrapper.addEventListener('touchend', function(e) {
+                if (!isDragging) return;
+                
+                endX = e.changedTouches[0].clientX;
+                const difference = startX - endX;
+                const threshold = 50; // 최소 스와이프 거리
+
+                if (Math.abs(difference) > threshold) {
+                    if (difference > 0) {
+                        // 왼쪽으로 스와이프 = 다음 슬라이드
+                        nextSlide();
+                    } else {
+                        // 오른쪽으로 스와이프 = 이전 슬라이드
+                        previousSlide();
+                    }
+                } else {
+                    // 스와이프 거리가 부족하면 자동 슬라이드 재시작
+                    resetAutoSlide();
+                }
+                
+                isDragging = false;
+            });
+
+            // 마우스 이벤트 (데스크톱용)
+            sliderWrapper.addEventListener('mouseenter', function() {
+                stopAutoSlide(); // 마우스 올렸을 때 자동 슬라이드 정지
+            });
+
+            sliderWrapper.addEventListener('mouseleave', function() {
+                resetAutoSlide(); // 마우스 벗어났을 때 자동 슬라이드 재시작
+            });
+        }
+
+        /**
+         * 키보드 이벤트로 슬라이더 조작
+         * 좌우 화살표 키로 슬라이드 이동
+          **/
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                // 모든 모달 찾아서 닫기
+                const modals = document.querySelectorAll('.modal');
+                modals.forEach(function(modal) {
+                    if (modal.style.display === 'block') {
+                        modal.style.display = 'none';
+                    }
+                });
+            } else if (event.key === 'ArrowLeft') {
+                // 왼쪽 화살표 = 이전 슬라이드
+                previousSlide();
+            } else if (event.key === 'ArrowRight') {
+                // 오른쪽 화살표 = 다음 슬라이드
+                nextSlide();
+            }
+        });
+
+        /**
+         * 슬라이드 이미지 클릭 시 확대 보기
+         * @param {HTMLElement} slideElement - 클릭된 슬라이드 요소
+         **/
+        function openSlideModal(slideElement) {
+            const modal = document.getElementById('photoModal');
+            const modalImg = document.getElementById('modalPhoto');
+            const img = slideElement.querySelector('img');
+            
+            modalImg.src = img.src;  // 클릭된 이미지의 src를 모달에 설정
+            modal.style.display = 'block';  // 모달 표시
+            
+            stopAutoSlide(); // 모달 열렸을 때 자동 슬라이드 정지
+            
+            // 모달 배경 클릭시 닫기
+            modal.onclick = function(event) {
+                if (event.target === modal) {
+                    closeModal('photo');
+                    resetAutoSlide(); // 모달 닫으면 자동 슬라이드 재시작
+                }
+            };
+        }
+
+        /**
+         * 기존 사진 모달 열기 함수 수정
+         * 슬라이더와 호환되도록 수정
+          **/
+        function openPhotoModal(imgElement) {
+            // 슬라이드 요소인지 확인
+            const slideElement = imgElement.closest('.slide');
+            if (slideElement) {
+                openSlideModal(slideElement);
+            } else {
+                // 기존 방식 유지 (다른 이미지들용)
+                const modal = document.getElementById('photoModal');
+                const modalImg = document.getElementById('modalPhoto');
+                const img = imgElement.querySelector('img');
+                
+                modalImg.src = img.src;
+                modal.style.display = 'block';
+                
+                modal.onclick = function(event) {
+                    if (event.target === modal) {
+                        closeModal('photo');
+                    }
+                };
+            }
+        }
+    </script>
+</head>
+<body>
+    <!-- HTML 본문 시작 -->
+    
+    <!-- 로딩 화면 -->
+    <div class="loading-screen" id="loadingScreen">
+        <!-- 로딩 화면: 페이지 로드 시 처음 보이는 화면 -->
+        <div class="loading-animation"></div>
+        <!-- 로딩 애니메이션: 원형 스피너 -->
+        <div class="loading-text">초대장을 준비하고 있습니다</div>
+        <!-- 로딩 메시지 -->
+    </div>
+
+    <!-- 꽃잎 애니메이션 컨테이너 -->
+    <div class="petals-container" id="petalsContainer">
+        <!-- 꽃잎들이 생성될 컨테이너 -->
+    </div>
+
+    <!-- 음악 제어 버튼 -->
+    <button class="music-control" id="musicControl" onclick="toggleMusic()">♪</button>
+    <!-- 음악 재생/정지 버튼 -->
+
+    <!-- 숨겨진 오디오 요소 (배경음악용) -->
+    <audio id="backgroundMusic" loop>
+        <!-- 배경음악 파일 (실제 파일이 없으므로 주석 처리) -->
+        <!-- <source src="wedding-music.mp3" type="audio/mpeg"> -->
+    </audio>
+
+    <div class="container">
+        <!-- 메인 컨테이너: 모든 내용을 감싸는 큰 상자 -->
+        
+        <!-- 메인 초대장 섹션 -->
+        <section class="invitation-main">
+            <!-- 초대장 메인 영역 -->
+            
+            <!-- 날짜 표시 -->
+            <div class="date-display">
+                25<span class="date-separator">|</span>09<span class="date-separator">|</span>06
+                <!-- 날짜: 2025년 6월 28일을 구분자와 함께 표시 -->
+            </div>
+            <div class="day-of-week">Saturday</div>
+            <!-- 요일: 토요일 -->
+
+            <div class="divider"></div>
+            <!-- 구분선 -->
+
+            <!-- 초대 메시지 -->
+            <div class="invitation-message">
+                축하의 마음으로 참석해주시는<br>
+                모든 분들을 귀하게 모실 수 있도록<br>
+                정성을 담은 자리를 마련했습니다
+                <!-- 초대 메시지 텍스트 -->
+            </div>
+
+            <!-- 신랑신부 이름 -->
+            <div class="couple-names">
+                <!-- 신랑신부 이름 영역 -->
+                <span class="groom-bride">이세영</span>
+                <!-- 신랑 이름: 최재민 -->
+                <span class="ampersand">&</span>
+                <!-- 앰퍼샌드 기호 -->
+                <span class="groom-bride">박민주</span>
+                <!-- 신부 이름: 서미숙 -->
+            </div>
+
+            <div class="divider"></div>
+            <!-- 구분선 -->
+
+            <!-- 초대장 전달 버튼 -->
+            <button class="button" onclick="openModal('invitation')">청첩장 전달하기</button>
+            <!-- 버튼: 클릭하면 초대장 모달창 열기 -->
+            
+            <!-- 오늘 하루 보지 않기 버튼 -->
+            <button class="button button-outline" onclick="todayPass()">오늘 하루 보지 않기</button>
+            <!-- 테두리 버튼: 오늘 하루 보지 않기 기능 -->
+        </section>
+
+        <!-- 웨딩 사진 갤러리 - 슬라이드 형태 -->
+        <section class="photo-gallery">
+            <!-- 사진 갤러리 섹션 -->
+            <h2 class="gallery-title">Wedding Gallery</h2>
+            <!-- 갤러리 제목 -->
+            
+            <!-- 슬라이더 컨테이너 -->
+            <div class="slider-container">
+                <!-- 슬라이더 래퍼 -->
+                <div class="slider-wrapper">
+                    <!-- 슬라이드 트랙 -->
+                    <div class="slider-track" id="sliderTrack">
+                        
+                        <!-- 슬라이드 1 - 메인 웨딩 사진 -->
+                        <div class="slide" onclick="openPhotoModal(this)">
+                             <img src="../images/image1.jpg" alt="웨딩 촬영 사진">
+                            <!-- 슬라이드 오버레이 -->
+                            <div class="slide-overlay">
+                                <div class="slide-title">Main Wedding Photo</div>
+                                <div class="slide-description">신랑신부의 가장 아름다운 순간</div>
+                            </div>
+                        </div>
+
+                        <!-- 슬라이드 2 - 스튜디오 촬영 -->
+                        <div class="slide" onclick="openPhotoModal(this)">
+                             <img src="../images/image5.jpg" alt="스튜디오 촬영 사진">
+                            <div class="slide-overlay">
+                                <div class="slide-title">Studio Portrait</div>
+                                <div class="slide-description">정성스럽게 준비한 스튜디오 촬영</div>
+                            </div>
+                        </div>
+
+                        <!-- 슬라이드 3 - 야외 촬영 -->
+                        <div class="slide" onclick="openPhotoModal(this)">
+                             <img src="../images/image2.jpg" alt="웨딩 촬영 사진">
+                            <div class="slide-overlay">
+                                <div class="slide-title">Outdoor Shoot</div>
+                                <div class="slide-description">자연스러운 야외 촬영 사진</div>
+                            </div>
+                        </div>
+
+                        <!-- 슬라이드 4 - 커플 스냅샷 -->
+                        <div class="slide" onclick="openPhotoModal(this)">
+                             <img src="../images/image3.jpg" alt="웨딩 촬영 사진">
+                            <div class="slide-overlay">
+                                <div class="slide-title">Couple Snapshot</div>
+                                <div class="slide-description">일상 속 달콤한 모습들</div>
+                            </div>
+                        </div>
+
+                        <!-- 슬라이드 5 - 약혼 사진 -->
+                        <div class="slide" onclick="openPhotoModal(this)">
+                             <img src="../images/image4.jpg" alt="웨딩 촬영 사진">
+                            <div class="slide-overlay">
+                                <div class="slide-title">Engagement Photo</div>
+                                <div class="slide-description">약혼식의 소중한 순간</div>
+                            </div>
+                        </div>
+                         <div class="slide" onclick="openPhotoModal(this)">
+                             <img src="../images/image4.jpg" alt="웨딩 촬영 사진">
+                            <div class="slide-overlay">
+                                <div class="slide-title">Engagement Photo</div>
+                                <div class="slide-description">약혼식의 소중한 순간</div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- 슬라이드 네비게이션 버튼 -->
+                <button class="slider-nav prev" onclick="previousSlide()">‹</button>
+                <!-- 이전 슬라이드 버튼 -->
+                <button class="slider-nav next" onclick="nextSlide()">›</button>
+                <!-- 다음 슬라이드 버튼 -->
+
+                <!-- 슬라이드 카운터 -->
+                <div class="slide-counter">
+                    <span id="currentSlide">1</span> / <span id="totalSlides">5</span>
+                    <!-- 현재 슬라이드 번호 / 전체 슬라이드 수 -->
+                </div>
+            </div>
+
+            <!-- 슬라이드 인디케이터 (점 표시) -->
+            <div class="slider-indicators" id="sliderIndicators">
+                <!-- 인디케이터 점들이 JavaScript로 동적 생성됨 -->
+            </div>
+        </section>
+
+        <!-- 결혼식 정보 섹션 -->
+        <section class="wedding-info">
+            <!-- 결혼식 상세 정보 영역 -->
+            <h2 class="info-title">Wedding Information</h2>
+            <!-- 정보 제목 -->
+
+            <!-- 날짜 및 시간 정보 -->
+            <div class="info-card">
+                <!-- 정보 카드 -->
+                <div class="info-label">Date & Time</div>
+                <!-- 라벨: 날짜와 시간 -->
+                <div class="info-text">
+                    <strong>2025년 6월 28일 토요일 오후 1시 30분</strong><br>
+                    <!-- 결혼식 날짜와 시간 -->
+                    아름다운 토요일 오후, 저희의 새로운 시작을 함께해주세요
+                    <!-- 부가 설명 -->
+                </div>
+            </div>
+
+            <!-- 장소 정보 -->
+            <div class="info-card">
+                <!-- 장소 정보 카드 -->
+                <div class="info-label">Location</div>
+                <!-- 라벨: 장소 -->
+                <div class="info-text">
+                    <strong>아름다운 광화문 B2 로스덴웨홀</strong><br>
+                    <!-- 예식장 이름과 위치 -->
+                    서울특별시 중구 세종대로 172<br>
+                    <!-- 상세 주소 -->
+                    지하철 5호선 광화문역 6번 출구 도보 3분
+                    <!-- 교통편 안내 -->
+                </div>
+            </div>
+
+            <!-- 예식 순서 -->
+            <div class="info-card">
+                <!-- 예식 순서 카드 -->
+                <div class="info-label">Schedule</div>
+                <!-- 라벨: 스케줄 -->
+                <div class="info-text">
+                    <strong>13:00</strong> 하객 입장 및 축하 인사<br>
+                    <strong>13:30</strong> 결혼식 시작<br>
+                    <strong>14:00</strong> 예식 종료 및 기념촬영<br>
+                    <strong>14:30</strong> 피로연 시작
+                    <!-- 시간별 예식 순서 -->
+                </div>
+            </div>
+
+            <div class="divider"></div>
+            <!-- 구분선 -->
+
+            <!-- 버튼들 -->
+            <button class="button" onclick="openModal('location')">오시는 길</button>
+            <!-- 오시는 길 버튼 -->
+            <button class="button button-outline" onclick="openModal('contact')">연락하기</button>
+            <!-- 연락하기 버튼 -->
+        </section>
+
+        <!-- 축의금 전달 섹션 -->
+        <section class="money-gift">
+            <!-- 축의금 안내 섹션 -->
+            <h2 class="info-title">축의금 전달</h2>
+            <!-- 축의금 제목 -->
+            
+            <div class="info-card">
+                <!-- 축의금 안내 카드 -->
+                <div class="info-text">
+                    마음만으로도 충분하지만,<br>
+                    축의금을 전달해주신다면<br>
+                    더욱 감사한 마음으로 받겠습니다.
+                    <!-- 축의금 안내 메시지 -->
+                </div>
+            </div>
+
+            <div class="divider"></div>
+            <!-- 구분선 -->
+
+            <button class="button" onclick="openModal('money')">계좌번호 확인</button>
+            <!-- 계좌번호 확인 버튼 -->
+        </section>
+
+        <!-- 방명록 섹션 -->
+        <section class="guestbook">
+            <!-- 방명록 영역 -->
+            <h2 class="info-title">축하 메시지</h2>
+            <!-- 방명록 제목 -->
+
+            <!-- 메시지 작성 폼 -->
+            <div class="message-form">
+                <!-- 메시지 작성 양식 -->
+                <div class="form-group">
+                    <!-- 이름 입력 그룹 -->
+                    <label for="guestName">이름</label>
+                    <!-- 이름 라벨 -->
+                    <input type="text" id="guestName" placeholder="성함을 입력해주세요">
+                    <!-- 이름 입력 필드 -->
+                </div>
+                
+                <div class="form-group">
+                    <!-- 메시지 입력 그룹 -->
+                    <label for="guestMessage">축하 메시지</label>
+                    <!-- 메시지 라벨 -->
+                    <textarea id="guestMessage" rows="4" placeholder="축하 메시지를 남겨주세요"></textarea>
+                    <!-- 메시지 입력 텍스트영역 -->
+                </div>
+                
+                <button class="button" onclick="addMessage()">메시지 남기기</button>
+                <!-- 메시지 등록 버튼 -->
+            </div>
+
+            <!-- 방명록 메시지 목록 -->
+            <div class="messages-list" id="messagesList">
+                <!-- 메시지 목록 컨테이너 -->
+                
+                <!-- 샘플 메시지 1 -->
+                <div class="message-item">
+                    <!-- 메시지 항목 -->
+                    <div class="message-author">김동현</div>
+                    <!-- 작성자 이름 -->
+                    <div class="message-content">
+                        축하합니다! 두 분의 앞날에 행복만 가득하길 바랍니다. 
+                        결혼식에 꼭 참석해서 축하 인사 드리겠습니다.
+                        <!-- 메시지 내용 -->
+                    </div>
+                    <div class="message-date">2025.06.20</div>
+                    <!-- 작성 날짜 -->
+                </div>
+
+                <!-- 샘플 메시지 2 -->
+                <div class="message-item">
+                    <div class="message-author">이수진</div>
+                    <div class="message-content">
+                        정말 축하해요! 예쁜 커플이 드디어 결혼하는군요. 
+                        행복한 가정 꾸리시길 진심으로 바랍니다.
+                    </div>
+                    <div class="message-date">2025.06.19</div>
+                </div>
+
+                <!-- 샘플 메시지 3 -->
+                <div class="message-item">
+                    <div class="message-author">박경수</div>
+                    <div class="message-content">
+                        두 분 모두 축하드립니다. 서로 사랑하고 존중하며 
+                        백년해로 하시길 바랍니다.
+                    </div>
+                    <div class="message-date">2025.06.18</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 연락처 정보 섹션 -->
+        <section class="contact-info">
+            <!-- 연락처 영역 -->
+            <h2 class="info-title">연락처</h2>
+            <!-- 연락처 제목 -->
+
+            <div class="contact-grid">
+                <!-- 연락처 그리드 -->
+                
+                <!-- 신랑 연락처 -->
+                <div class="contact-card">
+                    <!-- 신랑 연락처 카드 -->
+                    <div class="contact-title">신랑측</div>
+                    <!-- 신랑측 제목 -->
+                    <div class="contact-item">최재민: 010-1234-5678</div>
+                    <!-- 신랑 연락처 -->
+                    <div class="contact-item">아버지 최도현: 010-1111-2222</div>
+                    <!-- 신랑 아버지 연락처 -->
+                    <div class="contact-item">어머니 김미숙: 010-3333-4444</div>
+                    <!-- 신랑 어머니 연락처 -->
+                </div>
+
+                <!-- 신부 연락처 -->
+                <div class="contact-card">
+                    <!-- 신부 연락처 카드 -->
+                    <div class="contact-title">신부측</div>
+                    <!-- 신부측 제목 -->
+                    <div class="contact-item">서미숙: 010-9876-5432</div>
+                    <!-- 신부 연락처 -->
+                    <div class="contact-item">아버지 서정화: 010-5555-6666</div>
+                    <!-- 신부 아버지 연락처 -->
+                    <div class="contact-item">어머니 이승희: 010-7777-8888</div>
+                    <!-- 신부 어머니 연락처 -->
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- 모달창들 -->
+    
+    <!-- 청첩장 전달 모달 -->
+    <div class="modal" id="invitationModal">
+        <!-- 청첩장 모달창 -->
+        <div class="modal-content">
+            <!-- 모달 내용 -->
+            <span class="close-modal" onclick="closeModal('invitation')">&times;</span>
+            <!-- 닫기 버튼 -->
+            <h3>청첩장 전달</h3>
+            <!-- 모달 제목 -->
+            <div class="modal-info">
+                <strong>최재민 & 서미숙</strong>
+                <!-- 신랑신부 정보 -->
+            </div>
+            <div class="modal-info">
+                2025년 6월 28일 토요일 오후 1시 30분
+                <!-- 날짜 시간 정보 -->
+            </div>
+            <div class="modal-info">
+                아름다운 광화문 B2 로스덴웨홀
+                <!-- 장소 정보 -->
+            </div>
+            <div class="divider"></div>
+            <button class="button" onclick="shareInvitation()">카카오톡 공유</button>
+            <!-- 카카오톡 공유 버튼 -->
+            <button class="button button-outline" onclick="copyLink()">링크 복사</button>
+            <!-- 링크 복사 버튼 -->
+        </div>
+    </div>
+
+    <!-- 오시는 길 모달 -->
+    <div class="modal" id="locationModal">
+        <!-- 오시는 길 모달창 -->
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('location')">&times;</span>
+            <h3>오시는 길</h3>
+            <div class="modal-info">
+                <strong>지하철</strong><br>
+                5호선 광화문역 6번 출구 도보 3분
+                <!-- 지하철 이용 안내 -->
+            </div>
+            <div class="modal-info">
+                <strong>버스</strong><br>
+                광화문 정류장 하차
+                <!-- 버스 이용 안내 -->
+            </div>
+            <div class="modal-info">
+                <strong>자가용</strong><br>
+                광화문 공영주차장 이용
+                <!-- 자가용 이용 안내 -->
+            </div>
+            <div class="divider"></div>
+            <button class="button" onclick="openMap()">지도 보기</button>
+            <!-- 지도 보기 버튼 -->
+            <button class="button button-outline" onclick="copyAddress()">주소 복사</button>
+            <!-- 주소 복사 버튼 -->
+        </div>
+    </div>
+
+    <!-- 연락처 모달 -->
+    <div class="modal" id="contactModal">
+        <!-- 연락처 모달창 -->
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('contact')">&times;</span>
+            <h3>연락처</h3>
+            <div class="modal-info">
+                <strong>신랑 최재민</strong><br>
+                010-1234-5678
+                <!-- 신랑 연락처 -->
+            </div>
+            <div class="modal-info">
+                <strong>신부 서미숙</strong><br>
+                010-9876-5432
+                <!-- 신부 연락처 -->
+            </div>
+            <div class="divider"></div>
+            <button class="button" onclick="callGroom()">신랑에게 전화</button>
+            <!-- 신랑 전화 버튼 -->
+            <button class="button button-outline" onclick="callBride()">신부에게 전화</button>
+            <!-- 신부 전화 버튼 -->
+        </div>
+    </div>
+
+    <!-- 계좌번호 모달 -->
+    <div class="modal" id="moneyModal">
+        <!-- 축의금 계좌번호 모달창 -->
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('money')">&times;</span>
+            <h3>축의금 계좌번호</h3>
+            <div class="modal-info">
+                <strong>신랑</strong><br>
+                국민은행 123-456-789012<br>
+                최재민
+                <!-- 신랑 계좌번호 -->
+            </div>
+            <div class="modal-info">
+                <strong>신부</strong><br>
+                신한은행 987-654-321098<br>
+                서미숙
+                <!-- 신부 계좌번호 -->
+            </div>
+            <div class="divider"></div>
+            <button class="button" onclick="copyAccount('groom')">신랑 계좌 복사</button>
+            <!-- 신랑 계좌 복사 버튼 -->
+            <button class="button button-outline" onclick="copyAccount('bride')">신부 계좌 복사</button>
+            <!-- 신부 계좌 복사 버튼 -->
+        </div>
+    </div>
+
+    <!-- 사진 확대 모달 -->
+    <div class="modal" id="photoModal">
+        <!-- 사진 확대 모달창 -->
+        <div class="modal-content" style="max-width: 90%; max-height: 90%; padding: 20px;">
+            <span class="close-modal" onclick="closeModal('photo')">&times;</span>
+            <img id="modalPhoto" style="width: 100%; border-radius: 8px;" alt="확대된 사진">
+            <!-- 확대된 사진 표시 -->
+        </div>
+    </div>
+
+    <script>
+        // JavaScript 코드 시작 - 웹페이지의 동작을 담당
+        
+        // 전역 변수들
+        let musicPlaying = false;  // 음악 재생 상태를 저장하는 변수
+        let petalInterval;         // 꽃잎 생성 간격을 저장하는 변수
+        let currentSlideIndex = 0; // 현재 슬라이드 인덱스
+        let totalSlides = 0;       // 전체 슬라이드 개수
+        let slideInterval;         // 자동 슬라이드 인터벌
+        let isAutoSliding = true;  // 자동 슬라이드 상태
+        
+        /**
+         * 페이지 로드 완료 후 실행되는 초기화 함수
+         * DOM이 완전히 로드된 후 실행됩니다
+         */
+        document.addEventListener('DOMContentLoaded', function() {
+            // 로딩 화면을 2초 후에 숨기기
+            setTimeout(function() {
+                const loadingScreen = document.getElementById('loadingScreen');
+                loadingScreen.style.opacity = '0';  // 서서히 투명하게
+                setTimeout(function() {
+                    loadingScreen.style.display = 'none';  // 완전히 숨김
+                }, 1000);  // 1초 후 완전히 제거
+            }, 2000);  // 2초 후 시작
+            
+            // 꽃잎 애니메이션 시작
+            startPetalAnimation();
+            
+            // 슬라이더 초기화
+            initializeSlider();
+        });
+
+        /**
+         * 꽃잎 애니메이션을 시작하는 함수
+         * 일정 간격으로 꽃잎을 생성하여 화면에 떨어뜨립니다
+         */
+        function startPetalAnimation() {
+            const container = document.getElementById('petalsContainer');
+            
+            // 5초마다 새로운 꽃잎 생성 (더 은은하게)
+            petalInterval = setInterval(function() {
+                createPetal(container);
+            }, 5000);
+            
+            // 즉시 첫 번째 꽃잎 생성
+            createPetal(container);
+        }
+
+        /**
+         * 개별 꽃잎을 생성하는 함수
+         * @param {HTMLElement} container - 꽃잎을 추가할 컨테이너 요소
+         */
+        function createPetal(container) {
+            const petal = document.createElement('div');  // 꽃잎 요소 생성
+            petal.className = 'petal';  // CSS 클래스 추가
+            
+            // 꽃잎의 랜덤한 시작 위치 설정 (화면 너비 내에서)
+            petal.style.left = Math.random() * 100 + '%';
+            
+            // 꽃잎의 랜덤한 애니메이션 속도 설정 (12초 ~ 20초)
+            petal.style.animationDuration = (Math.random() * 8 + 12) + 's';
+            
+            // 컨테이너에 꽃잎 추가
+            container.appendChild(petal);
+            
+            // 애니메이션 완료 후 꽃잎 제거 (메모리 절약)
+            setTimeout(function() {
+                if (container.contains(petal)) {
+                    container.removeChild(petal);
+                }
+            }, 25000);  // 25초 후 제거
+        }
+
+        /**
+         * 모달창을 여는 함수
+         * @param {string} modalType - 열 모달의 타입
+         */
+        function openModal(modalType) {
+            const modal = document.getElementById(modalType + 'Modal');
+            modal.style.display = 'block';  // 모달 표시
+            
+            // 모달 배경 클릭시 닫기 이벤트 추가
+            modal.onclick = function(event) {
+                if (event.target === modal) {
+                    closeModal(modalType);
+                }
+            };
+        }
+
+        /**
+         * 모달창을 닫는 함수
+         * @param {string} modalType - 닫을 모달의 타입
+         */
+        function closeModal(modalType) {
+            const modal = document.getElementById(modalType + 'Modal');
+            modal.style.display = 'none';  // 모달 숨김
+        }
+
+        /**
+         * 사진 확대 모달을 여는 함수
+         * @param {HTMLElement} imgElement - 클릭된 이미지 요소
+         */
+        function openPhotoModal(imgElement) {
+            const modal = document.getElementById('photoModal');
+            const modalImg = document.getElementById('modalPhoto');
+            const img = imgElement.querySelector('img');
+            
+            modalImg.src = img.src;  // 클릭된 이미지의 src를 모달에 설정
+            modal.style.display = 'block';  // 모달 표시
+            
+            // 모달 배경 클릭시 닫기
+            modal.onclick = function(event) {
+                if (event.target === modal) {
+                    closeModal('photo');
+                }
+            };
+        }
+
+        /**
+         * 음악 재생/정지를 토글하는 함수
+         */
+        function toggleMusic() {
+            const music = document.getElementById('backgroundMusic');
+            const musicBtn = document.getElementById('musicControl');
+            
+            if (musicPlaying) {
+                music.pause();
+                musicBtn.textContent = '♪';  // 음악 아이콘
+                musicPlaying = false;
+            } else {
+                music.play().catch(function(error) {
+                    console.log('음악 재생 실패:', error);
+                    alert('음악 파일을 찾을 수 없습니다.');
+                });
+                musicBtn.textContent = '⏸';  // 일시정지 아이콘
+                musicPlaying = true;
+            }
+        }
+
+        /**
+         * 방명록에 새로운 메시지를 추가하는 함수 기존 
+         */
+        // function addMessage() {
+        //     const nameInput = document.getElementById('guestName');
+        //     const messageInput = document.getElementById('guestMessage');
+        //     const messagesList = document.getElementById('messagesList');
+            
+        //     const name = nameInput.value.trim();      // 이름 입력값
+        //     const message = messageInput.value.trim(); // 메시지 입력값
+            
+        //     // 입력값 검증
+        //     if (!name || !message) {
+        //         alert('이름과 메시지를 모두 입력해주세요.');
+        //         return;
+        //     }
+            
+        //     // 새로운 메시지 요소 생성
+        //     const messageItem = document.createElement('div');
+        //     messageItem.className = 'message-item';
+            
+        //     // 현재 날짜 생성
+        //     const today = new Date();
+        //     const dateString = today.getFullYear() + '.' + 
+        //                      String(today.getMonth() + 1).padStart(2, '0') + '.' + 
+        //                      String(today.getDate()).padStart(2, '0');
+            
+        //     // 메시지 HTML 구성
+        //     messageItem.innerHTML = `
+        //         <div class="message-author">${name}</div>
+        //         <div class="message-content">${message}</div>
+        //         <div class="message-date">${dateString}</div>
+        //     `;
+            
+        //     // 메시지 목록의 맨 앞에 추가
+        //     messagesList.insertBefore(messageItem, messagesList.firstChild);
+            
+        //     // 입력 필드 초기화
+        //     nameInput.value = '';
+        //     messageInput.value = '';
+            
+        //     // 성공 알림
+        //     alert('축하 메시지가 등록되었습니다!');
+        // }
+
+       
+
+
+
+
+
+        /**
+         * 청첩장을 카카오톡으로 공유하는 함수
+         */
+        function shareInvitation() {
+            alert('카카오톡 공유 기능입니다!\n실제 개발에서는 카카오톡 API를 연동합니다.');
+        }
+
+        /**
+         * 청첩장 링크를 클립보드에 복사하는 함수
+         */
+        function copyLink() {
+            const url = window.location.href;
+            navigator.clipboard.writeText(url).then(function() {
+                alert('청첩장 링크가 복사되었습니다!');
+            }).catch(function() {
+                alert('링크 복사에 실패했습니다.');
+            });
+        }
+
+        /**
+         * 지도 앱을 여는 함수
+         */
+        function openMap() {
+            alert('지도 앱을 연결합니다!\n실제 개발에서는 지도 API를 연동합니다.');
+        }
+
+        /**
+         * 주소를 클립보드에 복사하는 함수
+         */
+        function copyAddress() {
+            const address = '서울특별시 중구 세종대로 172 아름다운 광화문 B2 로스덴웨홀';
+            navigator.clipboard.writeText(address).then(function() {
+                alert('주소가 복사되었습니다!');
+            }).catch(function() {
+                alert('주소 복사에 실패했습니다.');
+            });
+        }
+
+        /**
+         * 신랑에게 전화하는 함수
+         */
+        function callGroom() {
+            window.location.href = 'tel:010-1234-5678';
+        }
+
+        /**
+         * 신부에게 전화하는 함수
+         */
+        function callBride() {
+            window.location.href = 'tel:010-9876-5432';
+        }
+
+        /**
+         * 계좌번호를 클립보드에 복사하는 함수
+         * @param {string} type - 복사할 계좌 타입
+         */
+        function copyAccount(type) {
+            let accountInfo;
+            
+            if (type === 'groom') {
+                // 신랑 계좌번호
+                accountInfo = '국민은행 123-456-789012 최재민';
+            } else if (type === 'bride') {
+                // 신부 계좌번호
+                accountInfo = '신한은행 987-654-321098 서미숙';
+            }
+            
+            // 클립보드에 복사
+            navigator.clipboard.writeText(accountInfo).then(function() {
+                alert('계좌번호가 복사되었습니다!\n' + accountInfo);
+            }).catch(function() {
+                alert('계좌번호 복사에 실패했습니다.');
+            });
+        }
+
+        /**
+         * 오늘 하루 보지 않기 기능
+         */
+        function todayPass() {
+            alert('오늘 하루 동안 초대장을 보지 않습니다.\n내일 다시 확인해주세요!');
+        }
+
+        /**
+         * 키보드 이벤트 처리
+         * ESC 키를 누르면 열린 모달을 닫습니다
+         * 좌우 화살표 키로 슬라이드를 조작합니다
+         */
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                // 모든 모달 찾아서 닫기
+                const modals = document.querySelectorAll('.modal');
+                modals.forEach(function(modal) {
+                    if (modal.style.display === 'block') {
+                        modal.style.display = 'none';
+                        resetAutoSlide(); // 모달 닫으면 자동 슬라이드 재시작
+                    }
+                });
+            } else if (event.key === 'ArrowLeft') {
+                // 왼쪽 화살표 = 이전 슬라이드
+                previousSlide();
+            } else if (event.key === 'ArrowRight') {
+                // 오른쪽 화살표 = 다음 슬라이드
+                nextSlide();
+            }
+        });
+
+        /**
+         * 스크롤 이벤트 처리
+         * 스크롤할 때마다 추가 꽃잎 생성 (매우 은은하게)
+         */
+        let lastScrollTime = 0;
+        window.addEventListener('scroll', function() {
+            const now = Date.now();
+            // 스크롤 이벤트가 너무 자주 발생하지 않도록 제한 (1초 간격)
+            if (now - lastScrollTime > 1000) {
+                lastScrollTime = now;
+                
+                // 스크롤시 추가 꽃잎 생성 (매우 낮은 확률)
+                const container = document.getElementById('petalsContainer');
+                if (Math.random() > 0.9) {  // 10% 확률로 꽃잎 생성
+                    createPetal(container);
+                }
+            }
+        });
+
+        /**
+         * 이미지 로드 에러 처리
+         * 이미지가 로드되지 않을 때 대체 이미지나 메시지 표시
+         */
+        document.addEventListener('DOMContentLoaded', function() {
+            const images = document.querySelectorAll('img');
+            images.forEach(function(img) {
+                img.addEventListener('error', function() {
+                    // 이미지 로드 실패시 대체 텍스트로 변경
+                    this.style.display = 'none';
+                    const placeholder = document.createElement('div');
+                    placeholder.style.cssText = `
+                        width: 100%; 
+                        height: 100%; 
+                        background: linear-gradient(45deg, #f5f5f5, #e5e5e5);
+                        display: flex; 
+                        align-items: center; 
+                        justify-content: center;
+                        color: #999;
+                        font-size: 12px;
+                        border-radius: 8px;
+                        font-family: inherit;
+                    `;
+                    placeholder.textContent = '사진을 준비중입니다';
+                    this.parentNode.appendChild(placeholder);
+                });
+            });
+        });
+
+        /**
+         * 페이지 가시성 변경 처리
+         * 사용자가 다른 탭으로 이동했다가 돌아올 때 환영 효과
+         */
+        document.addEventListener('visibilitychange', function() {
+            if (!document.hidden) {
+                // 페이지가 다시 보여질 때 은은한 환영 효과
+                const container = document.getElementById('petalsContainer');
+                // 연속으로 2개의 꽃잎만 생성
+                for (let i = 0; i < 2; i++) {
+                    setTimeout(function() {
+                        createPetal(container);
+                    }, i * 500);  // 500ms 간격으로 생성
+                }
+            }
+        });
+
+        /**
+         * 성능 모니터링
+         * 페이지 로딩 성능 측정 및 로그
+         */
+        window.addEventListener('load', function() {
+            // 페이지 로딩 완료 시간 측정
+            const loadTime = performance.now();
+            console.log('페이지 로딩 완료:', Math.round(loadTime) + 'ms');
+            
+            // 메모리 사용량 확인 (Chrome에서만 지원)
+            if ('memory' in performance) {
+                console.log('메모리 사용량:', {
+                    used: Math.round(performance.memory.usedJSHeapSize / 1048576) + 'MB',
+                    total: Math.round(performance.memory.totalJSHeapSize / 1048576) + 'MB'
+                });
+            }
+        });
+
+        /**
+         * 터치 제스처 지원 (모바일)
+         * 스와이프 제스처로 사진 네비게이션
+         */
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        document.addEventListener('touchstart', function(event) {
+            touchStartX = event.changedTouches[0].screenX;
+        });
+
+        document.addEventListener('touchend', function(event) {
+            touchEndX = event.changedTouches[0].screenX;
+            handleSwipe();
+        });
+
+        function handleSwipe() {
+            const swipeThreshold = 50;
+            const diff = touchStartX - touchEndX;
+            
+            if (Math.abs(diff) > swipeThreshold) {
+                // 스와이프 감지 시 은은한 꽃잎 효과
+                const container = document.getElementById('petalsContainer');
+                createPetal(container);
+            }
+        }
+
+        /**
+         * 스무스 스크롤 구현
+         * 앵커 링크 클릭 시 부드러운 스크롤
+         */
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        /**
+         * 인터섹션 옵저버로 애니메이션 최적화
+         * 화면에 보이는 요소만 애니메이션 실행
+         */
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver(function(entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // 관찰할 요소들 등록
+        document.addEventListener('DOMContentLoaded', function() {
+            const animateElements = document.querySelectorAll('.info-card, .photo-item, .message-item');
+            animateElements.forEach(el => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(20px)';
+                el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                observer.observe(el);
+            });
+        });
+
+        // 개발자 도구에서 사용할 수 있는 디버깅 함수들
+        window.debugInvitation = {
+            // 모든 꽃잎 제거
+            clearPetals: function() {
+                const container = document.getElementById('petalsContainer');
+                container.innerHTML = '';
+            },
+            
+            // 꽃잎 생성 테스트
+            testPetals: function(count = 5) {
+                const container = document.getElementById('petalsContainer');
+                for (let i = 0; i < count; i++) {
+                    setTimeout(() => createPetal(container), i * 200);
+                }
+            },
+            
+            // 모든 모달 닫기
+            closeAllModals: function() {
+                const modals = document.querySelectorAll('.modal');
+                modals.forEach(modal => modal.style.display = 'none');
+            },
+            
+            // 성능 정보 출력
+            getPerformanceInfo: function() {
+                return {
+                    loadTime: Math.round(performance.now()) + 'ms',
+                    memory: 'memory' in performance ? {
+                        used: Math.round(performance.memory.usedJSHeapSize / 1048576) + 'MB',
+                        total: Math.round(performance.memory.totalJSHeapSize / 1048576) + 'MB'
+                    } : 'Not supported'
+                };
+            },
+            
+            // 슬라이더 디버깅 함수들
+            slider: {
+                // 특정 슬라이드로 이동
+                goTo: function(index) {
+                    if (index >= 0 && index < totalSlides) {
+                        goToSlide(index);
+                    } else {
+                        console.log('Invalid slide index. Range: 0-' + (totalSlides - 1));
+                    }
+                },
+                
+                // 자동 슬라이드 토글
+                toggleAuto: function() {
+                    isAutoSliding = !isAutoSliding;
+                    if (isAutoSliding) {
+                        startAutoSlide();
+                        console.log('Auto slide enabled');
+                    } else {
+                        stopAutoSlide();
+                        console.log('Auto slide disabled');
+                    }
+                },
+                
+                // 슬라이더 상태 정보
+                getInfo: function() {
+                    return {
+                        currentIndex: currentSlideIndex,
+                        totalSlides: totalSlides,
+                        isAutoSliding: isAutoSliding
+                    };
+                }
+            }
+        };
+
+        console.log('웨딩 청첩장이 로드되었습니다.');
+        console.log('디버깅 명령어: window.debugInvitation');
+        console.log('슬라이더 디버깅: window.debugInvitation.slider');
+    </script>
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-analytics.js";
+        // TODO: Add SDKs for Firebase products that you want to use
+        // https://firebase.google.com/docs/web/setup#available-libraries
+        import { getFirestore, collection, addDoc, serverTimestamp, query, orderBy, onSnapshot } 
+        from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
+
+
+        // Your web app's Firebase configuration
+        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+        const firebaseConfig = {
+            apiKey: "AIzaSyDfJBlv2ATD8SqFF2Mnms8DdvmHqMuOvO8",
+            authDomain: "wedding-invitation-f5a80.firebaseapp.com",
+            projectId: "wedding-invitation-f5a80",
+            storageBucket: "wedding-invitation-f5a80.firebasestorage.app",
+            messagingSenderId: "541686222836",
+            appId: "1:541686222836:web:269ef7dd01faae4c6273a1",
+            measurementId: "G-D332DJW4KM"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const db = getFirestore(app);
+
+        window.addMessage = async function () {
+            const nameInput = document.getElementById('guestName');
+            const messageInput = document.getElementById('guestMessage');
+            const name = nameInput.value.trim();
+            const message = messageInput.value.trim();
+            const messagesList = document.getElementById('messagesList');
+
+
+            if (!name || !message) {
+            alert('이름과 메시지를 모두 입력해주세요.');
+            return;
+            }
+
+            await addDoc(collection(db, "guestbook"), {
+            name,
+            message,
+            timestamp: serverTimestamp()
+            });
+
+            const messageItem = document.createElement('div');
+            messageItem.className = 'message-item';
+            
+            // 현재 날짜 생성
+            const today = new Date();
+            const dateString = today.getFullYear() + '.' + 
+                             String(today.getMonth() + 1).padStart(2, '0') + '.' + 
+                             String(today.getDate()).padStart(2, '0');
+            
+            // 메시지 HTML 구성
+            messageItem.innerHTML = `
+                <div class="message-author">${name}</div>
+                <div class="message-content">${message}</div>
+                <div class="message-date">${dateString}</div>
+            `;
+            
+            // 메시지 목록의 맨 앞에 추가
+            messagesList.insertBefore(messageItem, messagesList.firstChild);
+
+
+            nameInput.value = '';
+            messageInput.value = '';
+            alert('축하 메시지가 등록되었습니다!');
+        };
+
+        // 메시지 표시
+        function loadMessages() {
+            const messagesList = document.getElementById('messagesList');
+            const q = query(collection(db, "guestbook"), orderBy("timestamp", "desc"));
+
+            onSnapshot(q, (snapshot) => {
+            messagesList.innerHTML = '';
+            snapshot.forEach((doc) => {
+                const data = doc.data();
+                const date = data.timestamp?.toDate();
+                const dateString = date
+                ? `${date.getFullYear()}.${String(date.getMonth() + 1).padStart(2, '0')}.${String(date.getDate()).padStart(2, '0')}`
+                : '';
+
+                const div = document.createElement('div');
+                div.className = 'message-item';
+                div.innerHTML = `
+                <div class="message-author">${data.name}</div>
+                <div class="message-content">${data.message}</div>
+                <div class="message-date">${dateString}</div>
+                `;
+                messagesList.appendChild(div);
+            });
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', loadMessages);
+
+        </script>
+</body>
+</html>
