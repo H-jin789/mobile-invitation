@@ -1,0 +1,605 @@
+        /* CSS 스타일 시작 - 웹페이지의 디자인을 담당 */
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@300;400;600;700&family=Inter:wght@300;400;500;600&display=swap');
+        /* 구글 폰트: Playfair Display(우아한 세리프), Inter(모던 산세리프) */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            /* 모든 요소의 여백을 0으로 초기화하고 박스 크기 계산 방식 통일 */
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #fafafa;
+            color: #2d2d2d;
+            line-height: 1.6;
+            overflow-x: hidden;
+            /* 본문: 모던 폰트, 연한 회색 배경, 어두운 회색 글자, 가로 스크롤 숨김 */
+        }
+
+        /* 꽃잎 애니메이션을 위한 컨테이너 */
+        .petals-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            /* 꽃잎 컨테이너: 화면 전체를 덮는 고정 위치, 클릭 이벤트 무시 */
+        }
+
+        /* 개별 꽃잎 스타일 - 미니멀한 디자인 */
+        .petal {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(200, 180, 160, 0.6);
+            border-radius: 50%;
+            animation: fall linear infinite;
+            /* 꽃잎: 작은 점 형태, 베이지 색상, 원형, 낙하 애니메이션 */
+        }
+
+        /* 꽃잎 낙하 애니메이션 */
+        @keyframes fall {
+            0% {
+                transform: translateY(-10vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(110vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .container {
+            max-width: 420px;
+            margin: 0 auto;
+            background: #ffffff;
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.08);
+            position: relative;
+            z-index: 2;
+            /* 메인 컨테이너: 최대 너비 420px, 중앙 정렬, 흰색 배경, 부드러운 그림자 */
+        }
+
+        /* 메인 초대장 섹션 */
+        .invitation-main {
+            text-align: center;
+            padding: 80px 40px 60px;
+            background: linear-gradient(180deg, #ffffff 0%, #f8f8f8 100%);
+            position: relative;
+            /* 메인 초대장: 중앙 정렬, 여백, 세로 그라데이션 배경 */
+        }
+
+        /* 날짜 표시 */
+        .date-display {
+            font-family: 'Playfair Display', serif;
+            font-size: 56px;
+            font-weight: 300;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+            letter-spacing: 2px;
+            /* 날짜: 우아한 세리프 폰트, 큰 글씨, 가는 굵기, 검은색 */
+        }
+
+        .date-separator {
+            font-size: 40px;
+            color: #c8b4a0;
+            font-weight: 300;
+            /* 날짜 구분자: 중간 크기, 베이지색 */
+        }
+
+        .day-of-week {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 60px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            font-weight: 300;
+            /* 요일: 작은 글씨, 회색, 대문자, 가는 굵기 */
+        }
+
+        /* 모달 창 스타일 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            backdrop-filter: blur(8px);
+            /* 모달: 기본 숨김, 화면 전체 덮기, 블러 효과 */
+        }
+
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            text-align: center;
+            max-width: 380px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            /* 모달 내용: 화면 중앙, 흰색 배경, 둥근 모서리, 그림자 */
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 16px;
+            right: 20px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #999;
+            transition: color 0.2s;
+            /* 모달 닫기 버튼: 우상단, 회색, 호버 효과 */
+        }
+
+        .close-modal:hover {
+            color: #333;
+        }
+
+        .modal h3 {
+            color: #1a1a1a;
+            margin-bottom: 24px;
+            font-size: 20px;
+            font-weight: 500;
+            /* 모달 제목: 검은색, 중간 굵기 */
+        }
+
+        .modal-info {
+            margin: 16px 0;
+            font-size: 15px;
+            color: #555;
+            line-height: 1.5;
+            /* 모달 정보: 회색, 줄 간격 */
+        }
+
+        .button {
+            background: #1a1a1a;
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            margin: 8px 6px;
+            transition: all 0.2s ease;
+            font-family: inherit;
+            /* 버튼: 검은색 배경, 흰색 글자, 둥근 모서리, 호버 효과 */
+        }
+
+        .button:hover {
+            background: #333;
+            transform: translateY(-1px);
+            /* 마우스 올렸을 때: 회색으로 변경, 위로 이동 */
+        }
+
+        .button-outline {
+            background: transparent;
+            color: #1a1a1a;
+            border: 1px solid #e0e0e0;
+            /* 테두리 버튼: 투명 배경, 검은 글자, 회색 테두리 */
+        }
+
+        .button-outline:hover {
+            background: #f5f5f5;
+            transform: translateY(-1px);
+        }
+
+        /* 청첩장 헤더 메시지 */
+        .invitation-message {
+            font-size: 15px;
+            line-height: 1.8;
+            color: #666;
+            margin-bottom: 50px;
+            font-weight: 300;
+            /* 초대 메시지: 회색, 가는 굵기, 줄 간격 */
+        }
+
+        /* 신랑신부 이름 */
+        .couple-names {
+            font-family: 'Playfair Display', serif;
+            font-size: 32px;
+            font-weight: 400;
+            color: #1a1a1a;
+            margin: 40px 0;
+            /* 신랑신부 이름: 세리프 폰트, 큰 글씨, 검은색 */
+        }
+
+        .groom-bride {
+            display: inline-block;
+            margin: 0 20px;
+            /* 신랑신부: 인라인 블록, 좌우 여백 */
+        }
+
+        .ampersand {
+            color: #c8b4a0;
+            font-size: 24px;
+            margin: 0 16px;
+            font-weight: 300;
+            /* 앰퍼샌드(&): 베이지색, 작은 크기, 가는 굵기 */
+        }
+
+        /* 웨딩 사진 갤러리 */
+        .photo-gallery {
+            padding: 60px 20px;
+            background: #ffffff;
+            /* 사진 갤러리: 여백, 흰색 배경 */
+        }
+
+        .gallery-title {
+            text-align: center;
+            font-family: 'Playfair Display', serif;
+            font-size: 24px;
+            color: #1a1a1a;
+            margin-bottom: 40px;
+            font-weight: 400;
+            /* 갤러리 제목: 중앙 정렬, 세리프 폰트, 검은색 */
+        }
+
+        .photo-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+            /* 사진 그리드: 2열 격자, 작은 간격 */
+        }
+
+        .photo-item {
+            aspect-ratio: 1;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease;
+            cursor: pointer;
+            /* 사진 항목: 정사각형 비율, 둥근 모서리, 부드러운 그림자, 호버 효과 */
+        }
+
+        .photo-item:hover {
+            transform: scale(1.02);
+            /* 마우스 올렸을 때: 크기 살짝 확대 */
+        }
+
+        .photo-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            /* 사진: 전체 크기, 비율 유지하며 채우기 */
+        }
+
+        .main-photo {
+            grid-column: 1 / -1;
+            aspect-ratio: 16/9;
+            margin-bottom: 16px;
+            /* 메인 사진: 전체 너비, 16:9 비율 */
+        }
+
+        /* 결혼식 정보 섹션 */
+        .wedding-info {
+            padding: 60px 40px;
+            text-align: center;
+            background: #f8f8f8;
+            /* 결혼식 정보: 여백, 중앙 정렬, 연한 회색 배경 */
+        }
+
+        .info-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 24px;
+            color: #1a1a1a;
+            margin-bottom: 40px;
+            font-weight: 400;
+            /* 정보 제목: 세리프 폰트, 검은색 */
+        }
+
+        .info-card {
+            background: white;
+            padding: 32px 24px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+            text-align: left;
+            /* 정보 카드: 흰색 배경, 여백, 둥근 모서리, 부드러운 그림자, 왼쪽 정렬 */
+        }
+
+        .info-label {
+            font-size: 12px;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+            font-weight: 500;
+            /* 정보 라벨: 작은 글씨, 회색, 대문자, 굵게 */
+        }
+
+        .info-text {
+            font-size: 15px;
+            color: #333;
+            line-height: 1.6;
+            /* 정보 텍스트: 중간 글씨, 어두운 회색, 줄 간격 */
+        }
+
+        .info-text strong {
+            color: #1a1a1a;
+            font-weight: 600;
+            /* 강조 텍스트: 검은색, 굵게 */
+        }
+
+        /* 축의금 전달 섹션 */
+        .money-gift {
+            padding: 60px 40px;
+            text-align: center;
+            background: #ffffff;
+            /* 축의금 섹션: 여백, 중앙 정렬, 흰색 배경 */
+        }
+
+        /* 방명록 섹션 */
+        .guestbook {
+            padding: 60px 40px;
+            background: #f8f8f8;
+            /* 방명록 섹션: 여백, 연한 회색 배경 */
+        }
+
+        .message-form {
+            background: white;
+            padding: 32px;
+            border-radius: 8px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+            margin-bottom: 32px;
+            /* 메시지 폼: 흰색 배경, 여백, 둥근 모서리, 부드러운 그림자 */
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+            /* 폼 그룹: 아래 여백, 왼쪽 정렬 */
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            color: #333;
+            font-weight: 500;
+            font-size: 14px;
+            /* 라벨: 블록 표시, 어두운 회색, 굵게 */
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 15px;
+            font-family: inherit;
+            transition: border-color 0.2s;
+            /* 입력 필드: 전체 너비, 여백, 회색 테두리, 둥근 모서리, 호버 효과 */
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #1a1a1a;
+            /* 포커스 시: 테두리 검은색으로 변경 */
+        }
+
+        .messages-list {
+            max-height: 400px;
+            overflow-y: auto;
+            /* 메시지 목록: 최대 높이, 세로 스크롤 */
+        }
+
+        .message-item {
+            background: white;
+            padding: 24px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            /* 메시지 항목: 흰색 배경, 여백, 둥근 모서리, 부드러운 그림자 */
+        }
+
+        .message-author {
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+            font-size: 14px;
+            /* 메시지 작성자: 굵게, 검은색 */
+        }
+
+        .message-content {
+            color: #555;
+            line-height: 1.6;
+            font-size: 14px;
+            /* 메시지 내용: 회색, 줄 간격 */
+        }
+
+        .message-date {
+            font-size: 12px;
+            color: #999;
+            text-align: right;
+            margin-top: 12px;
+            /* 메시지 날짜: 작은 글씨, 회색, 오른쪽 정렬 */
+        }
+
+        /* 연락처 섹션 */
+        .contact-info {
+            padding: 60px 40px;
+            background: #ffffff;
+            text-align: center;
+            /* 연락처 섹션: 여백, 흰색 배경, 중앙 정렬 */
+        }
+
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-top: 32px;
+            /* 연락처 그리드: 2열, 간격 */
+        }
+
+        .contact-card {
+            background: #f8f8f8;
+            padding: 24px;
+            border-radius: 8px;
+            /* 연락처 카드: 연한 회색 배경, 여백, 둥근 모서리 */
+        }
+
+        .contact-title {
+            font-size: 16px;
+            color: #1a1a1a;
+            font-weight: 600;
+            margin-bottom: 16px;
+            /* 연락처 제목: 중간 글씨, 검은색, 굵게 */
+        }
+
+        .contact-item {
+            margin: 8px 0;
+            font-size: 13px;
+            color: #666;
+            /* 연락처 항목: 여백, 작은 글씨, 회색 */
+        }
+
+        /* 반응형 디자인 */
+        @media (max-width: 480px) {
+            .invitation-main {
+                padding: 60px 30px 50px;
+            }
+            
+            .date-display {
+                font-size: 42px;
+                letter-spacing: 1px;
+            }
+            
+            .couple-names {
+                font-size: 26px;
+            }
+            
+            .photo-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+            
+            .contact-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .wedding-info,
+            .money-gift,
+            .guestbook,
+            .contact-info {
+                padding: 50px 30px;
+            }
+            /* 작은 화면용: 여백 축소, 글씨 크기 축소, 그리드 1열로 변경 */
+        }
+
+        /* 음악 제어 버튼 */
+        .music-control {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            width: 48px;
+            height: 48px;
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            font-size: 16px;
+            cursor: pointer;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+            backdrop-filter: blur(8px);
+            transition: all 0.2s;
+            /* 음악 버튼: 우상단 고정, 원형, 반투명 흰색 배경, 블러 효과 */
+        }
+
+        .music-control:hover {
+            background: rgba(255, 255, 255, 1);
+            transform: scale(1.05);
+        }
+
+        /* 로딩 화면 */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #ffffff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 1s ease;
+            /* 로딩 화면: 전체 화면, 흰색 배경, 중앙 정렬 */
+        }
+
+        .loading-text {
+            color: #666;
+            font-size: 16px;
+            margin-top: 24px;
+            font-weight: 300;
+            /* 로딩 텍스트: 회색, 중간 글씨, 가는 굵기 */
+        }
+
+        .loading-animation {
+            width: 40px;
+            height: 40px;
+            border: 2px solid #f0f0f0;
+            border-top: 2px solid #c8b4a0;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            /* 로딩 애니메이션: 원형 스피너, 베이지색 */
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+            /* 스핀 애니메이션: 360도 회전 */
+        }
+
+        /* 구분선 */
+        .divider {
+            width: 60px;
+            height: 1px;
+            background: #e0e0e0;
+            margin: 40px auto;
+            /* 구분선: 짧은 가로선, 회색, 중앙 정렬 */
+        }
+
+        /* 섹션별 여백 조정 */
+        .section-spacing {
+            padding: 80px 40px;
+            /* 섹션 여백: 상하 80px, 좌우 40px */
+        }
+
+        /* 텍스트 크기 계층 */
+        .text-xs { font-size: 12px; }
+        .text-sm { font-size: 14px; }
+        .text-base { font-size: 16px; }
+        .text-lg { font-size: 18px; }
+        .text-xl { font-size: 20px; }
+        .text-2xl { font-size: 24px; }
+        .text-3xl { font-size: 30px; }
+
+        /* 색상 유틸리티 */
+        .text-primary { color: #1a1a1a; }
+        .text-secondary { color: #666; }
+        .text-muted { color: #999; }
+        .text-accent { color: #c8b4a0; }
+
+        /* 그림자 유틸리티 */
+        .shadow-sm { box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12); }
+        .shadow-md { box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); }
+        .shadow-lg { box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15); }
