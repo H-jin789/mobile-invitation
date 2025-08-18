@@ -286,7 +286,7 @@
         /* 슬라이드 트랙 */
         .slider-track {
             display: flex;
-            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: transform 0.6s ease;
             /* 슬라이더 트랙: 플렉스 배치, 부드러운 전환 효과 */
         }
 
@@ -767,8 +767,156 @@
         .shadow-md { box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); }
         .shadow-lg { box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15); }
     </style>
-  
-    <script>
+  <script>
+    let currentSlideIndex = 0;
+    let totalSlides = 0;
+    let slideIntervalId = null;    // setInterval ID
+    let resetTimeoutId = null;     // setTimeout ID
+    const AUTO_SLIDE_DELAY = 10000; // 자동 슬라이드 간격: 10초
+    const RESTART_DELAY = 5000;     // 수동 조작 후 재시작 딜레이: 5초
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        initializeSlider();
+    });
+
+    function initializeSlider() {
+        const slides = document.querySelectorAll('.slide');
+        totalSlides = slides.length;
+        createIndicators();
+        updateSlider();
+        startAutoSlide();
+        setupTouchEvents();
+    }
+
+    function startAutoSlide() {
+        // 이미 인터벌이 돌고 있으면 중복 방지
+        if (slideIntervalId !== null) return;
+        
+        slideIntervalId = setInterval(() => {
+            goToNextSlide();
+        }, AUTO_SLIDE_DELAY);
+    }
+
+    function stopAutoSlide() {
+        if (slideIntervalId !== null) {
+            clearInterval(slideIntervalId);
+            slideIntervalId = null;
+        }
+    }
+
+    function resetAutoSlide() {
+        // 1) 자동 슬라이드 중단
+        stopAutoSlide();
+
+        // 2) 이미 예약된 재시작 타이머가 있으면 취소
+        if (resetTimeoutId !== null) {
+            clearTimeout(resetTimeoutId);
+        }
+
+        // 3) RESTART_DELAY 후 자동 슬라이드 재시작
+        resetTimeoutId = setTimeout(() => {
+            startAutoSlide();
+            // 재시작 타이머가 실행되었으므로 ID 초기화
+            resetTimeoutId = null;
+        }, RESTART_DELAY);
+    }
+
+    function goToNextSlide() {
+        currentSlideIndex = (currentSlideIndex + 1) % totalSlides;
+        updateSlider();
+    }
+
+    function goToPreviousSlide() {
+        currentSlideIndex = (currentSlideIndex - 1 + totalSlides) % totalSlides;
+        updateSlider();
+    }
+
+    function updateSlider() {
+        const sliderTrack = document.getElementById('sliderTrack');
+        const translateX = -currentSlideIndex * 100;
+        sliderTrack.style.transform = `translateX(${translateX}%)`;
+
+        // 인디케이터 활성화 업데이트
+        const indicators = document.querySelectorAll('.indicator');
+        indicators.forEach((ind, idx) => {
+            ind.classList.toggle('active', idx === currentSlideIndex);
+        });
+
+        // 슬라이드 카운터 업데이트
+        document.getElementById('currentSlide').textContent = currentSlideIndex + 1;
+    }
+
+    function setupTouchEvents() {
+        const sliderWrapper = document.querySelector('.slider-wrapper');
+        let startX = 0, endX = 0, isDragging = false;
+        const threshold = 50;
+
+        sliderWrapper.addEventListener('touchstart', e => {
+            startX = e.touches[0].clientX;
+            isDragging = true;
+            // 터치 시작 시 자동 슬라이드 잠시 멈추기
+            stopAutoSlide();
+        });
+
+        sliderWrapper.addEventListener('touchmove', e => {
+            if (isDragging) {
+                e.preventDefault();
+            }
+        });
+
+        sliderWrapper.addEventListener('touchend', e => {
+            endX = e.changedTouches[0].clientX;
+            const diff = startX - endX;
+            if (Math.abs(diff) > threshold) {
+                if (diff > 0) {
+                    goToNextSlide();
+                } else {
+                    goToPreviousSlide();
+                }
+            }
+            isDragging = false;
+            // 터치 종료 후 다시 자동 슬라이드 재시작
+            resetAutoSlide();
+        });
+
+        // 마우스 오버/아웃으로 자동 슬라이드 제어 (데스크탑)
+        sliderWrapper.addEventListener('mouseenter', () => {
+            stopAutoSlide();
+        });
+        sliderWrapper.addEventListener('mouseleave', () => {
+            resetAutoSlide();
+        });
+    }
+
+    // prev/next 버튼 클릭 시
+    document.querySelector('.slider-nav.prev').addEventListener('click', () => {
+        goToPreviousSlide();
+        resetAutoSlide();
+    });
+    document.querySelector('.slider-nav.next').addEventListener('click', () => {
+        goToNextSlide();
+        resetAutoSlide();
+    });
+
+    // 인디케이터(점) 클릭 시 특정 슬라이드로 이동
+    function createIndicators() {
+        const container = document.getElementById('sliderIndicators');
+        container.innerHTML = '';
+        for (let i = 0; i < totalSlides; i++) {
+            const dot = document.createElement('div');
+            dot.className = 'indicator';
+            if (i === 0) dot.classList.add('active');
+            dot.addEventListener('click', () => {
+                currentSlideIndex = i;
+                updateSlider();
+                resetAutoSlide();
+            });
+            container.appendChild(dot);
+        }
+    }
+</script>
+
+    <!-- <script>
 
         /**
          * 슬라이더 초기화 함수
@@ -1027,7 +1175,7 @@
                 };
             }
         }
-    </script>
+    </script> -->
 </head>
 <body>
     <!-- HTML 본문 시작 -->
