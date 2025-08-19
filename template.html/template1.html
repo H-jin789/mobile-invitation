@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wedding Invitation</title>
+    <link rel="stylesheet" href="../css/template111.css">
+    <link rel="stylesheet" href="../css/font.css">
+    <link rel="stylesheet" href="../css/tempalte1_1.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Noto+Sans+KR:wght@300;400;500&display=swap');
+
+        #wrap{
+            max-width: 800px;
+            margin:0 auto;
+        }
+        
+        /* *** [추가] 신랑신부 소개 스타일 *** */
+        #area3 {
+            background-color: #fff;
+            padding: 80px 0;
+        }
+        
+        .couple-intro {
+            text-align: center;
+            padding: 0 40px;
+        }
+        
+        .couple-intro h2 {
+            font-family: "Nanum Myeongjo", serif;
+            font-size: 28px;
+            color: #8c5036;
+            margin-bottom: 50px;
+            font-weight: 500;
+        }
+        
+        .couple-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 40px;
+        }
+        
+        .person {
+            flex: 1;
+            padding: 0 20px;
+        }
+        
+        .person h3 {
+            font-family: "Nanum Myeongjo", serif;
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+        
+        .person .relationship {
+            font-size: 16px;
+            color: #666;
+            line-height: 1.5;
+        }
+        
+        /* *** [추가] 연락처 스타일 *** */
+        #area4 {
+            background-color: #f9f9fb;
+            padding: 80px 0;
+        }
+        
+        .contact-section {
+            padding: 0 40px;
+            text-align: center;
+        }
+        
+        .contact-section h2 {
+            font-family: "Nanum Myeongjo", serif;
+            font-size: 28px;
+            color: #8c5036;
+            margin-bottom: 50px;
+            font-weight: 500;
+        }
+        
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .contact-group h3 {
+            font-family: "Nanum Myeongjo", serif;
+            font-size: 20px;
+            color: #333;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+        
+        .contact-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .contact-item:last-child {
+            border-bottom: none;
+        }
+        
+        .contact-name {
+            font-size: 16px;
+            color: #333;
+        }
+        
+        .contact-btn {
+            background-color: #8c5036;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        
+        .contact-btn:hover {
+            background-color: #6d3d28;
+        }
+        
+        /* *** [추가] 오시는 길 스타일 *** */
+        #area5 {
+            background-color: #fff;
+            padding: 80px 0;
+        }
+        
+        .location-section {
+            padding: 0 40px;
+            text-align: center;
+        }
+        
+        .location-section h2 {
+            font-family: "Nanum Myeongjo", serif;
+            font-size: 28px;
+            color: #8c5036;
+            margin-bottom: 30px;
+            font-weight: 500;
+        }
+        
+        .venue-info {
+            background-color: #f8f9fa;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        
+        .venue-name {
+            font-family: "Nanum Myeongjo", serif;
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        
+        .venue-address {
+            font-size: 16px;
+            color: #666;
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+        
+        .venue-tel {
+            font-size: 16px;
+            color: #8c5036;
+        }
+        
+        .map-placeholder {
+            width: 100%;
+            height: 200px;
+            background-color: #e9ecef;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+        
+        .map-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+        
+        .map-btn {
+            background-color: #fff;
+            border: 2px solid #8c5036;
+            color: #8c5036;
+            padding: 10px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .map-btn:hover {
+            background-color: #8c5036;
+            color: white;
+        }
+        
+        /* *** [추가] 갤러리 스타일 *** */
+        #area6 {
+            background-color: #f9f9fb;
+            padding: 80px 0;
+        }
+        
+        .gallery-section {
+            padding: 0 40px;
+            text-align: center;
+        }
+        
+        .gallery-section h2 {
+            font-family: "Nanum Myeongjo", serif;
+            font-size: 28px;
+            color: #8c5036;
+            margin-bottom: 50px;
+            font-weight: 500;
+        }
+        
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+        
+        .gallery-item {
+            aspect-ratio: 1;
+            background-color: #e9ecef;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            font-size: 14px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .gallery-item:hover {
+            transform: scale(1.05);
+        }
+        
+        /* *** [추가] 마음전하기 스타일 *** */
+        #area7 {
+            background-color: #fff;
+            padding: 80px 0;
+        }
+        
+        .gift-section {
+            padding: 0 40px;
+            text-align: center;
+        }
+        
+        .gift-section h2 {
+            font-family: "Nanum Myeongjo", serif;
+            font-size: 28px;
+            color: #8c5036;
+            margin-bottom: 30px;
+            font-weight: 500;
+        }
+        
+        .gift-message {
+            font-size: 16px;
+            color: #666;
+            line-height: 1.8;
+            margin-bottom: 40px;
+        }
+        
+        .gift-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .gift-btn {
+            background-color: #8c5036;
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        
+        .gift-btn:hover {
+            background-color: #6d3d28;
+        }
+        
+        /* 기존 스타일 유지 */
+        #wrap {
+            overflow: hidden;
+        }
+
+        .templatearea {
+            width: 100%;
+            position: relative;
+            letter-spacing: 0px;
+        }
+
+        .item {
+            display: flex;
+        }
+
+        .text {
+            width: 100%;
+        }
+
+        .photo {
+            display: flex;
+            flex-wrap: wrap;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .frame_wrap {
+            display: none;
+            background:#fff;
+        }
+
+        #area1 {
+            padding: 0px !important;
+        }
+
+        #area2{
+        }
+         #area2 span{
+            display: flex;
+            left: 50%;
+            justify-content: center;
+            align-items: center;
+            margin: 100px 50px 100px 50px;
+            font-size: 50px;
+            font-weight: 500;
+            text-align: center;
+         }
+
+         #invitation_text{
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 400;
+            font-size: 40px;
+            font-variant: 15px;
+            font-optical-sizing:20px;
+            text-align: center;
+            line-height: 2.3em;
+        }
+
+        img {
+            margin: 0px !important;
+            padding: 0px !important;
+        }
+
+        .flowergift {padding-bottom:0 !important;}
+        
+        /* *** [추가] 반응형 디자인 *** */
+        @media (max-width: 600px) {
+            .couple-info {
+                flex-direction: column;
+                gap: 30px;
+            }
+            
+            .contact-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            /* *** [추가] 모바일에서 연락처 아이템 세로 배치 *** */
+            .contact-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .contact-buttons {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .contact-btn {
+                flex: 1;
+                max-width: 120px;
+            }
+            
+            .map-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .gallery-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .couple-intro, .contact-section, .location-section, .gallery-section, .gift-section {
+                padding: 0 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="loader_main_preview" style="display: none;">
+        <div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
+    </div>
+    <div id="wrap">
+        <!-- 기존 area1 (메인 이미지) -->
+        <div id="area1" idx="1" class="templatearea" style="display: block; height: 1423px;">
+            <div id="item_1" class="item" style="top: 0px; left: 0px;  position:absolute; width: full;">
+                <img class="img" src="../images/background.png" width="800px" height="1423px">
+            </div>
+            <div id="item_2" class="item photo-image" style="top: 0px; left: 0px;  position:absolute;">
+                <img class="img" src="../images/yr_image_1.jpg" width="800px" height="1423px"></div>
+                <div id="item_3" class="item" style="top: 0px; left: 0px;  position:absolute;">
+                    <img class="img" src="../images/love.gif" width="800px" height="1423px"></div>
+                    <div id="item_4" class="item" style="top: 259.812px; left: 0px; position: absolute; width: 352.469px; height: 75px; align-items: center;"><div class="text" style="font-family: &quot;Nanum Myeongjo&quot;, serif; font-size: 53px; color: rgb(255, 255, 255); font-weight: bold; text-align: right; letter-spacing: 0.43em; line-height: 1.4em;">
+                        김병찬</div>
+                    </div>
+                    <div id="item_5" class="item" style="top: 257.812px; left: 470.312px; position: absolute; width: 329.672px; height: 79.5px; align-items: center;"><div class="text" style="font-family: &quot;Nanum Myeongjo&quot;, serif; font-size: 53px; color: rgb(255, 255, 255); font-weight: bold; text-align: left; letter-spacing: 0.43em; line-height: 1.4em;">
+                        조유림</div>
+                    </div>
+                    <div id="item_6" class="item" style="top: 1259.81px; left: 0px; position: absolute; width: 800px; height: 45px; align-items: center;"><div class="text" style="font-family: &quot;Nanum Myeongjo&quot;, serif; font-size: 30px; color: rgb(255, 255, 255); text-align: center; letter-spacing: 0em; line-height: 1.4em;">
+                        센텀 그랜드 블랑
+                    </div>
+                </div>
+                <div id="item_7" class="item" style="top: 1214.81px; left: 0px; position: absolute; width: 800px; height: 45px; align-items: center;"><div class="text" style="font-family: &quot;Nanum Myeongjo&quot;, serif; font-size: 30px; color: rgb(255, 255, 255); text-align: center; letter-spacing: 0em; line-height: 1.4em;">
+                    2025.11.22 SAT PM 02:00
+                </div>
+            </div>
+        </div>
+
+        <!-- 기존 area2 (초대 메시지) -->
+        <div id="area2" idx="2" class="templatearea" style="display: block; height: 852px; background-color: rgb(239, 239, 239);">
+            <div id="item_8" class="item" style="top: 0px;position:absolute;width: 100%;display: flex;justify-content: center;align-items: center;">
+                <span>INVITATION</span>
+            </div>
+            <div id="item_9" class="item" style="top: 273.766px; left: 0px; position: absolute; width: 800px; height: 578.219px; align-items: flex-start;">
+                <div class="text" style="font-family: &quot;Noto Sans KR&quot;, sans-serif; font-size: 34px; color: rgb(51, 51, 51); text-align: center; letter-spacing: 0em; line-height: 2.3em;">
+                    서로가 마주보며 다져온 사랑을<br>
+                    이제 함께 한 곳을  바라보며<br>
+                    걸어갈 수 있는 큰 사랑으로 키우고자 합니다.<br>
+                    저희 두 사람이 사랑의 이름으로<br>
+                    지켜나갈 수 있게 앞날을<br>
+                    축복해 주시면 감사하겠습니다.
+                </div>
+            </div>
+        </div>
+
+        <!-- *** [추가] area3 - 신랑신부 소개 *** -->
+        <div id="area3" idx="3" class="templatearea">
+            <div class="couple-intro">
+                <h2>신랑 & 신부</h2>
+                <div class="couple-info">
+                    <div class="person">
+                        <h3>김병찬</h3>
+                        <div class="relationship">
+                            김○○ · 박○○의 아들
+                        </div>
+                    </div>
+                    <div class="person">
+                        <h3>조유림</h3>
+                        <div class="relationship">
+                            조○○ · 이○○의 딸
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- *** [수정] area4 - 연락처 (전화/문자 연동 기능 추가) *** -->
+        <div id="area4" idx="4" class="templatearea">
+            <div class="contact-section">
+                <h2>연락처</h2>
+                <div class="contact-grid">
+                    <div class="contact-group">
+                        <h3>신랑측</h3>
+                        <div class="contact-item">
+                            <span class="contact-name">신랑 김병찬</span>
+                            <div class="contact-buttons">
+                                <button class="contact-btn call" onclick="makeCall('010-1234-5678')">📞 전화</button>
+                                <button class="contact-btn sms" onclick="sendSMS('010-1234-5678', '김병찬')">💬 문자</button>
+                            </div>
+                        </div>
+                        <div class="contact-item">
+                            <span class="contact-name">아버지</span>
+                            <div class="contact-buttons">
+                                <button class="contact-btn call" onclick="makeCall('010-1111-2222')">📞 전화</button>
+                                <button class="contact-btn sms" onclick="sendSMS('010-1111-2222', '신랑 아버지')">💬 문자</button>
+                            </div>
+                        </div>
+                        <div class="contact-item">
+                            <span class="contact-name">어머니</span>
+                            <div class="contact-buttons">
+                                <button class="contact-btn call" onclick="makeCall('010-3333-4444')">📞 전화</button>
+                                <button class="contact-btn sms" onclick="sendSMS('010-3333-4444', '신랑 어머니')">💬 문자</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="contact-group">
+                        <h3>신부측</h3>
+                        <div class="contact-item">
+                            <span class="contact-name">신부 조유림</span>
+                            <div class="contact-buttons">
+                                <button class="contact-btn call" onclick="makeCall('010-8765-4321')">📞 전화</button>
+                                <button class="contact-btn sms" onclick="sendSMS('010-8765-4321', '조유림')">💬 문자</button>
+                            </div>
+                        </div>
+                        <div class="contact-item">
+                            <span class="contact-name">아버지</span>
+                            <div class="contact-buttons">
+                                <button class="contact-btn call" onclick="makeCall('010-5555-6666')">📞 전화</button>
+                                <button class="contact-btn sms" onclick="sendSMS('010-5555-6666', '신부 아버지')">💬 문자</button>
+                            </div>
+                        </div>
+                        <div class="contact-item">
+                            <span class="contact-name">어머니</span>
+                            <div class="contact-buttons">
+                                <button class="contact-btn call" onclick="makeCall('010-7777-8888')">📞 전화</button>
+                                <button class="contact-btn sms" onclick="sendSMS('010-7777-8888', '신부 어머니')">💬 문자</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- *** [추가] area5 - 오시는 길 *** -->
+        <div id="area5" idx="5" class="templatearea">
+            <div class="location-section">
+                <h2>오시는 길</h2>
+                <div class="venue-info">
+                    <div class="venue-name">센텀 그랜드 블랑</div>
+                    <div class="venue-address">
+                        부산광역시 해운대구 센텀중앙로 79<br>
+                        센텀그랜드블랑 3층
+                    </div>
+                    <div class="venue-tel">TEL. 051-123-4567</div>
+                </div>
+                <div class="map-placeholder">
+                    지도 영역<br>
+                    (실제 구현시 카카오맵/네이버맵 API 연동)
+                </div>
+                <div class="map-buttons">
+                    <a href="#" class="map-btn">카카오맵</a>
+                    <a href="#" class="map-btn">네이버맵</a>
+                    <a href="#" class="map-btn">구글맵</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- *** [추가] area6 - 갤러리 *** -->
+        <div id="area6" idx="6" class="templatearea">
+            <div class="gallery-section">
+                <h2>갤러리</h2>
+                <div class="gallery-grid">
+                    <div class="gallery-item" onclick="openGallery(1)">사진 1</div>
+                    <div class="gallery-item" onclick="openGallery(2)">사진 2</div>
+                    <div class="gallery-item" onclick="openGallery(3)">사진 3</div>
+                    <div class="gallery-item" onclick="openGallery(4)">사진 4</div>
+                    <div class="gallery-item" onclick="openGallery(5)">사진 5</div>
+                    <div class="gallery-item" onclick="openGallery(6)">사진 6</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- *** [추가] area7 - 마음전하기 *** -->
+        <div id="area7" idx="7" class="templatearea">
+            <div class="gift-section">
+                <h2>마음 전하기</h2>
+                <div class="gift-message">
+                    참석이 어려우신 분들을 위해<br>
+                    온라인으로 축하의 마음을 전해보세요
+                </div>
+                <div class="gift-buttons">
+                    <button class="gift-btn" onclick="openAccountInfo('groom')">신랑측 계좌번호</button>
+                    <button class="gift-btn" onclick="openAccountInfo('bride')">신부측 계좌번호</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // *** [수정] 전화 걸기 함수 - 모바일 최적화 *** 
+        function makeCall(phoneNumber) {
+            // 하이픈 제거하여 순수 번호만 추출
+            const cleanNumber = phoneNumber.replace(/-/g, '');
+            
+            // 모바일 기기인지 확인
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            
+            if (isMobile) {
+                // 모바일에서는 바로 전화 앱 실행
+                window.location.href = `tel:${cleanNumber}`;
+            } else {
+                // 데스크톱에서는 확인 후 실행
+                if (confirm(`${phoneNumber}로 전화를 걸까요?`)) {
+                    window.location.href = `tel:${cleanNumber}`;
+                }
+            }
+        }
+
+        // *** [추가] 문자 보내기 함수 *** 
+        function sendSMS(phoneNumber, personName) {
+            // 하이픈 제거하여 순수 번호만 추출
+            const cleanNumber = phoneNumber.replace(/-/g, '');
+            
+            // 미리 작성된 문자 메시지
+            const defaultMessage = `안녕하세요! 김병찬♥조유림 결혼식 관련하여 연락드립니다.`;
+            
+            // URL 인코딩 (한글 문자 처리)
+            const encodedMessage = encodeURIComponent(defaultMessage);
+            
+            // 모바일 기기 확인
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            
+            if (isMobile) {
+                // 모바일에서는 바로 문자 앱 실행
+                window.location.href = `sms:${cleanNumber}?body=${encodedMessage}`;
+            } else {
+                // 데스크톱에서는 안내 메시지
+                alert(`${personName}님께 문자를 보내려면\n휴대폰에서 ${phoneNumber}로\n문자를 보내주세요.\n\n추천 메시지:\n${defaultMessage}`);
+            }
+        }
+
+        // *** [추가] 이메일 보내기 함수 (선택사항) *** 
+        function sendEmail(email, subject, body) {
+            const encodedSubject = encodeURIComponent(subject);
+            const encodedBody = encodeURIComponent(body);
+            window.location.href = `mailto:${email}?subject=${encodedSubject}&body=${encodedBody}`;
+        }
+
+        // *** [추가] 카카오톡 공유하기 함수 (고급 기능) *** 
+        function shareKakao() {
+            // 실제 카카오톡 SDK 연동 시 사용
+            if (typeof Kakao !== 'undefined') {
+                Kakao.Link.sendDefault({
+                    objectType: 'feed',
+                    content: {
+                        title: '김병찬 ♥ 조유림 결혼합니다',
+                        description: '2025년 11월 22일 토요일 오후 2시\n센텀 그랜드 블랑',
+                        imageUrl: 'https://your-domain.com/wedding-image.jpg',
+                        link: {
+                            mobileWebUrl: window.location.href,
+                            webUrl: window.location.href
+                        }
+                    }
+                });
+            } else {
+                alert('카카오톡 공유 기능은 카카오톡 SDK 설정 후 사용 가능합니다.');
+            }
+        }
+
+        // *** [추가] 클립보드 복사 함수 *** 
+        async function copyToClipboard(text, type) {
+            try {
+                await navigator.clipboard.writeText(text);
+                alert(`${type}이(가) 클립보드에 복사되었습니다.\n${text}`);
+            } catch (err) {
+                // 클립보드 API가 지원되지 않는 경우
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                alert(`${type}이(가) 복사되었습니다.\n${text}`);
+            }
+        }
+
+        // *** [기존] 갤러리 열기 함수 ***
+        function openGallery(photoNumber) {
+            alert(`사진 ${photoNumber}을 큰 화면으로 보여줍니다.\n(실제 구현시 이미지 뷰어 팝업)`);
+        }
+
+        // *** [수정] 계좌정보 보기 함수 - 복사 기능 추가 ***
+        function openAccountInfo(side) {
+            let accounts = [];
+            let title = '';
+            
+            if (side === 'groom') {
+                title = '신랑측 계좌정보';
+                accounts = [
+                    { bank: '국민은행', number: '123-456-789012', holder: '김병찬' },
+                    { bank: '농협은행', number: '987-654-321098', holder: '김○○(아버지)' }
+                ];
+            } else {
+                title = '신부측 계좌정보';
+                accounts = [
+                    { bank: '우리은행', number: '456-789-123456', holder: '조유림' },
+                    { bank: '신한은행', number: '654-321-987654', holder: '조○○(아버지)' }
+                ];
+            }
+            
+            // 계좌 정보를 선택할 수 있도록 버튼 생성
+            let accountList = accounts.map((account, index) => 
+                `${index + 1}. ${account.bank} ${account.number} (${account.holder})`
+            ).join('\n');
+            
+            let selectedAccount = prompt(`${title}\n\n${accountList}\n\n복사할 계좌번호를 선택하세요 (1-${accounts.length}):`);
+            
+            if (selectedAccount && selectedAccount >= 1 && selectedAccount <= accounts.length) {
+                const account = accounts[selectedAccount - 1];
+                const accountText = `${account.bank} ${account.number} ${account.holder}`;
+                copyToClipboard(account.number, '계좌번호');
+            }
+        }
+
+        // *** [추가] 페이지 로드 시 모바일 최적화 체크 ***
+        document.addEventListener('DOMContentLoaded', function() {
+            // 모바일 기기 감지
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            
+            if (isMobile) {
+                // 모바일에서 터치 이벤트 최적화
+                document.body.style.webkitTouchCallout = 'none';
+                document.body.style.webkitUserSelect = 'none';
+                document.body.style.userSelect = 'none';
+                
+                // 줌 방지 (선택사항)
+                const viewport = document.querySelector('meta[name="viewport"]');
+                if (viewport) {
+                    viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no');
+                }
+            }
+        });
+    </script>
+</body>
+</html>
